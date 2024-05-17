@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.TicketVO;
 
@@ -16,4 +17,6 @@ public interface TicketService {
 	TicketVO createTicket(CreateTicketDTO createTicketDTO);
 	
 	List<TicketVO> getAllTicket();
+	
+	TicketVO assignTicket(AssignTicketDTO assignTicketDTO);
 }

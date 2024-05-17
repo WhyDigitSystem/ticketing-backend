@@ -1,10 +1,13 @@
 package com.base.basesetup.service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.TicketVO;
 import com.base.basesetup.repo.TicketRepo;
@@ -35,6 +38,18 @@ public class TicketServicelmpl  implements TicketService{
 		// TODO Auto-generated method stub
 		
 		return ticketRepo.findAll();
+	}
+
+	@Override
+	public TicketVO assignTicket(AssignTicketDTO assignTicketDTO) {
+		
+		TicketVO ticketVO=ticketRepo.findById(assignTicketDTO.getId()).get();
+		ticketVO.setStatus(assignTicketDTO.getStatus());
+		ticketVO.setAssignedTo(assignTicketDTO.getAssignedTo());
+		Date currentDate=new Date();
+		ticketVO.setAssignedDate(currentDate);
+		ticketVO.setModifiedBy(assignTicketDTO.getModifiedBy());
+		return ticketRepo.save(ticketVO);
 	}
 	
 	

@@ -37,6 +37,7 @@ public class CreatedUpdatedDate {
 	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss a")
 	@Column(name="modifiedon",length = 25)
 	private String modifiedon;
+	
 
 	@PrePersist
 	public void onSave() {
@@ -44,6 +45,7 @@ public class CreatedUpdatedDate {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a");
 		this.createdon = dateFormat.format(currentDate);
 		this.modifiedon = dateFormat.format(currentDate);
+		
 	}
 
 	@PostLoad

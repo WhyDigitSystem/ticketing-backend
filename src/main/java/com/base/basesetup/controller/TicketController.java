@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
+import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.TicketVO;
@@ -87,6 +89,32 @@ public class TicketController extends BaseController {
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Ticket",
 					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@PutMapping("/assignTicket")
+	public ResponseEntity<ResponseDTO> assignTicket(@RequestBody AssignTicketDTO assignTicketDTO) {
+		String methodName = "assignTicket()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			TicketVO ticketVO = ticketService.assignTicket(assignTicketDTO);
+			if (ticketVO != null) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket Assign successfully");
+				responseObjectsMap.put("ticketAssign", ticketVO);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				errorMsg = "Ticket not found for ID: " + assignTicketDTO.getId();
+				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+			}
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
