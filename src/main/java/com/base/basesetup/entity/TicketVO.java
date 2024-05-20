@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -73,6 +73,10 @@ public class TicketVO {
 	
 	@Column(name="completedon")
 	private Date completedOn;
+	
+	@Lob
+    @Column(name = "data", columnDefinition="LONGBLOB")
+    private byte[] data;
 
 	@Embedded
     private CreatedUpdatedDate commondate = new CreatedUpdatedDate();

@@ -1,11 +1,13 @@
 package com.base.basesetup.service;
 
-import java.time.LocalDate;
+import java.awt.Image;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
@@ -32,12 +34,24 @@ public class TicketServicelmpl  implements TicketService{
 		
 		return ticketRepo.save(tvo);
 	}
+	
+	@Override
+	public TicketVO saveTicketIssueImage(MultipartFile file,Long id) throws IOException {
+		TicketVO ticketVO = ticketRepo.findById(id).get();
+		ticketVO.setData(file.getBytes());
+        return ticketRepo.save(ticketVO);
+    }
 
 	@Override
 	public List<TicketVO> getAllTicket() {
 		// TODO Auto-generated method stub
-		
 		return ticketRepo.findAll();
+	}
+	
+	@Override
+	public TicketVO getTicketById(Long id) {
+		// TODO Auto-generated method stub
+		return ticketRepo.findById(id).get();
 	}
 
 	@Override
