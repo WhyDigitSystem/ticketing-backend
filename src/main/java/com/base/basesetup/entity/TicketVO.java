@@ -75,8 +75,8 @@ public class TicketVO {
 	private Date completedOn;
 	
 	@Lob
-    @Column(name = "data", columnDefinition="LONGBLOB")
-    private byte[] data;
+    @Column(name = "imagedata", columnDefinition="LONGBLOB")
+    private byte[] imageData;
 
 	@Embedded
     private CreatedUpdatedDate commondate = new CreatedUpdatedDate();

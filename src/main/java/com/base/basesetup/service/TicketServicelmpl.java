@@ -38,7 +38,7 @@ public class TicketServicelmpl  implements TicketService{
 	@Override
 	public TicketVO saveTicketIssueImage(MultipartFile file,Long id) throws IOException {
 		TicketVO ticketVO = ticketRepo.findById(id).get();
-		ticketVO.setData(file.getBytes());
+		ticketVO.setImageData(file.getBytes());
         return ticketRepo.save(ticketVO);
     }
 
