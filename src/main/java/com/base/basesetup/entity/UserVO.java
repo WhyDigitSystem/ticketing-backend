@@ -43,6 +43,7 @@ public class UserVO {
 	private String email;
 	private String userName;
 	private String password;
+	private String type;
 //	private String phone;
 //	private String secondaryPhone;
 	private boolean loginStatus;
@@ -51,8 +52,7 @@ public class UserVO {
 //	private Gender gender;
 //	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-dd-MM")
 //	private LocalDate dob;
-	@Enumerated(EnumType.STRING)
-	private Role role;
+
 
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();

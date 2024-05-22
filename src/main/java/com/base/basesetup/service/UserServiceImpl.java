@@ -56,7 +56,8 @@ public class UserServiceImpl implements UserService {
 	private UserVO getUserVOFromSignUpFormDTO(SignUpFormDTO signUpRequest) {
 		UserVO userVO = new UserVO();
 		userVO.setFirstName(signUpRequest.getFirstName());
-		userVO.setLastName(signUpRequest.getLastName());
+		userVO.setType(signUpRequest.getType());
+		userVO.setActive(false);
 		userVO.setUserName(signUpRequest.getUserName());
 		userVO.setEmail(signUpRequest.getEmail());
 		try {
@@ -65,8 +66,6 @@ public class UserServiceImpl implements UserService {
 			LOGGER.error(e.getMessage());
 			throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
 		}
-		userVO.setRole(Role.ROLE_USER);
-		userVO.setActive(true);
 		return userVO;
 	}
 
@@ -80,15 +79,22 @@ public class UserServiceImpl implements UserService {
 		}
 		UserVO userVO = userRepo.findByUserName(loginRequest.getUserName());
 		if (ObjectUtils.isNotEmpty(userVO)) {
-			if (compareEncodedPasswordWithEncryptedPassword(loginRequest.getPassword(), userVO.getPassword())) {
+			if(userVO.isActive())
+			{
+				if (compareEncodedPasswordWithEncryptedPassword(loginRequest.getPassword(), userVO.getPassword())) {
 				updateUserLoginInformation(userVO);
-			} else {
-				throw new ApplicationContextException(UserConstants.ERRROR_MSG_PASSWORD_MISMATCH);
+				} else {
+					throw new ApplicationContextException(UserConstants.ERRROR_MSG_PASSWORD_MISMATCH);
+				}
+			}
+			else
+			{
+				throw new ApplicationContextException(UserConstants.ACCOUNT_INACTIVE_MESSAGE);
 			}
 		} else {
 			throw new ApplicationContextException(
 					UserConstants.ERRROR_MSG_USER_INFORMATION_NOT_FOUND_AND_ASKING_SIGNUP);
-		}
+		} 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return userVO;
 	}
