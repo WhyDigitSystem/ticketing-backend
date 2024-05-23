@@ -1,6 +1,5 @@
 package com.base.basesetup.service;
 
-import java.awt.Image;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -66,6 +65,4 @@ public class TicketServicelmpl  implements TicketService{
 		return ticketRepo.save(ticketVO);
 	}
 	
-	
-
 }
