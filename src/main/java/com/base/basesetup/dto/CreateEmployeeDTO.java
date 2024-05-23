@@ -3,8 +3,6 @@ package com.base.basesetup.dto;
 import java.sql.Date;
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class CreateEmployeeDTO {
 
 
+	private Long id;
+	
 	private String createdBy;
 	
 	private String modifiedBy;
@@ -26,5 +26,18 @@ public class CreateEmployeeDTO {
 	private String department;
 	
 	private Date doj;
+	
+	private String gender;
+	
+	private String branch;
+	
+	private String designation;
+	
+	private LocalDate dob;
+	
+	private String password;
+	
+	private boolean active;
+	
 		
 }

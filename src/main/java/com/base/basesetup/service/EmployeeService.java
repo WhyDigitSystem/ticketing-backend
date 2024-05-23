@@ -12,7 +12,9 @@ public interface EmployeeService {
 
 	// Create Ticket from User
 	
-	EmployeeVO createEmployee(CreateEmployeeDTO createEmployeeDTO);
+	EmployeeVO createEmployee(CreateEmployeeDTO createEmployeeDTO) throws Exception;
 	
 	List<EmployeeVO> getAllEmployee();
+	
+	EmployeeVO updateEmployee(CreateEmployeeDTO createEmployeeDTO) throws Exception;
 }

@@ -50,7 +50,21 @@ public class EmployeeVO {
 	@Column(name="code")
 	private String code;
 	
+	private String gender;
+	
+	private String branch;
+		
 	private String department;
+	
+	private String designation;
+	
+	private LocalDate dob;
+	
+	private String role="Employee";
+	
+	private String password;
+	
+	private boolean active;
 	
 	private Date doj;
 	

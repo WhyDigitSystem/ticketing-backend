@@ -1,6 +1,5 @@
 package com.base.basesetup.dto;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -13,9 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginFormDTO {
 
-	@NotBlank(message = "Email is Required")
-	@Size(max = 30)
-	@Email
+
+
 	private String userName;
 
 	@NotBlank

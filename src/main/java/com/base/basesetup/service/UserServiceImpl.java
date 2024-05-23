@@ -16,7 +16,6 @@ import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ChangePasswordFormDTO;
 import com.base.basesetup.dto.LoginFormDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
-import com.base.basesetup.dto.Role;
 import com.base.basesetup.dto.SignUpFormDTO;
 import com.base.basesetup.entity.UserActionVO;
 import com.base.basesetup.entity.UserVO;

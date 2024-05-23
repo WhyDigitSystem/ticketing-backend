@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ import com.base.basesetup.dto.CreateEmployeeDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.service.EmployeeService;
+
 
 @CrossOrigin
 @RequestMapping("/api/employee")
@@ -83,12 +85,37 @@ public class EmployeeController extends BaseController {
 			responseObjectsMap.put("employeeVO", employeeVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Employee",
+			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg,
 					errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@PutMapping("/updateEmployee")
+	public ResponseEntity<ResponseDTO> updateEmployee(@RequestBody CreateEmployeeDTO createEmployeeDTO) {
+		String methodName = "updateEmployee()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			EmployeeVO updateEmployee = employeeService.updateEmployee(createEmployeeDTO);
+			if (updateEmployee != null) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Employee updated successfully");
+				responseObjectsMap.put("employeeVO", updateEmployee);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				errorMsg = "Employee not found for ID: " + createEmployeeDTO.getId();
+				responseDTO = createServiceResponseError(responseObjectsMap, "Employee update failed", errorMsg);
+			}
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Employee update failed", methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 	
 }

@@ -6,4 +6,6 @@ import com.base.basesetup.entity.EmployeeVO;
 
 public interface EmployeeRepo extends JpaRepository<EmployeeVO, Long> {
 
+	boolean existsByCode(String code);
+
 }
