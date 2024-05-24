@@ -25,6 +25,10 @@ public interface TicketService {
 	TicketVO saveTicketIssueImage(MultipartFile file, Long id) throws IOException;
 
 	TicketVO getTicketById(Long id);
+	
+	List<TicketVO>getNotificationToEmployee(String empcode);
+	
+	TicketVO changeMflag(Long id);
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 }

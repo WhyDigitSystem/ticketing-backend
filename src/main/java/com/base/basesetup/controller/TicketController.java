@@ -122,6 +122,32 @@ public class TicketController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+	@PutMapping("/changeMflag")
+	public ResponseEntity<ResponseDTO> changeMflag(@RequestParam Long id) {
+		String methodName = "changeMflag()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			TicketVO ticketVO = ticketService.changeMflag(id);
+			if (ticketVO != null) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket Assign successfully");
+				responseObjectsMap.put("ticketAssign", ticketVO);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				errorMsg = "Ticket not found for ID: " +id;
+				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+			}
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
 	@PostMapping("/upload")
 	public ResponseEntity<ResponseDTO> uploadTicketIssue(@RequestParam("file") MultipartFile file,@RequestParam Long id) {
 		String methodName = "uploadTicketIssue()";
@@ -186,5 +212,30 @@ public class TicketController extends BaseController {
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 //    }
 
+    @GetMapping("/getAllTicketNotification")
+	public ResponseEntity<ResponseDTO> getAllTicketNotification(@RequestParam String empCode) {
+		String methodName = "getAllTicketNotification()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<TicketVO> ticketVO = null;
+		try {
+			ticketVO = ticketService.getNotificationToEmployee(empCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets");
+			responseObjectsMap.put("ticketVO", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Unable to Get Ticket Information", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 	
 }

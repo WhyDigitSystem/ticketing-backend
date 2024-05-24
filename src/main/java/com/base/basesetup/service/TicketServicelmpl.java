@@ -59,9 +59,22 @@ public class TicketServicelmpl  implements TicketService{
 		TicketVO ticketVO=ticketRepo.findById(assignTicketDTO.getId()).get();
 		ticketVO.setStatus(assignTicketDTO.getStatus());
 		ticketVO.setAssignedTo(assignTicketDTO.getAssignedTo());
+		ticketVO.setAssignedToEmp(assignTicketDTO.getAssignedToEmployee());
 		Date currentDate=new Date();
 		ticketVO.setAssignedDate(currentDate);
 		ticketVO.setModifiedBy(assignTicketDTO.getModifiedBy());
+		return ticketRepo.save(ticketVO);
+	}
+
+	@Override
+	public List<TicketVO> getNotificationToEmployee(String empcode) {
+		return ticketRepo.findNewTicketNotification(empcode);
+	}
+
+	@Override
+	public TicketVO changeMflag(Long id) {
+		TicketVO ticketVO=ticketRepo.findById(id).get();
+		ticketVO.setMflag(true);
 		return ticketRepo.save(ticketVO);
 	}
 	

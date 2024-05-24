@@ -65,6 +65,9 @@ public class TicketVO {
 	@Column(name="assignedto")
 	private String assignedTo;
 	
+	@Column(name="assignedtoEmployee")
+	private String assignedToEmp;
+	
 	@Column(name="assigneddate")
 	private Date assignedDate;
 	
@@ -73,6 +76,8 @@ public class TicketVO {
 	
 	@Column(name="completedon")
 	private Date completedOn;
+	
+	private boolean mflag;
 	
 	@Lob
     @Column(name = "imagedata", columnDefinition="LONGBLOB")

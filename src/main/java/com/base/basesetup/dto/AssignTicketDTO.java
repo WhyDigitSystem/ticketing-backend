@@ -1,7 +1,5 @@
 package com.base.basesetup.dto;
 
-import java.sql.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +16,7 @@ public class AssignTicketDTO {
 	private String status;
 	
 	private String assignedTo;
+
+	private String AssignedToEmployee;
 
 }
