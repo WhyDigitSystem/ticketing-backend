@@ -20,6 +20,8 @@ public interface TicketService {
 	
 	List<TicketVO> getAllTicket();
 	
+	List<TicketVO> getAllTicketByAssignedTo(String empCode);
+	
 	TicketVO assignTicket(AssignTicketDTO assignTicketDTO);
 
 	TicketVO saveTicketIssueImage(MultipartFile file, Long id) throws IOException;
@@ -29,6 +31,8 @@ public interface TicketService {
 	List<TicketVO>getNotificationToEmployee(String empcode);
 	
 	TicketVO changeMflag(Long id);
+
+	void updateMflagForAssignedTo(String empCode);
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 }

@@ -67,6 +67,32 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getAllTicketByAssignedTo")
+	public ResponseEntity<ResponseDTO> getAllTicketByAssignedTo(@RequestParam String empCode) {
+		String methodName = "getAllTicket()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<TicketVO> ticketVO = null;
+		try {
+			ticketVO = ticketService.getAllTicketByAssignedTo(empCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets");
+			responseObjectsMap.put("ticketVO", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Unable to Get Ticket Information", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 	
 	@PostMapping("/createticket")
@@ -139,6 +165,25 @@ public class TicketController extends BaseController {
 				errorMsg = "Ticket not found for ID: " +id;
 				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 			}
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@PutMapping("/changeMflagforAllTicket")
+	public ResponseEntity<ResponseDTO> changeMflagforAllTicket(@RequestParam String empCode) {
+		String methodName = "changeMflagforAllTicket()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+		 ticketService.updateMflagForAssignedTo(empCode);
+						
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);

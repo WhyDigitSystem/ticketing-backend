@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +50,12 @@ public class TicketServicelmpl  implements TicketService{
 	}
 	
 	@Override
+	public List<TicketVO> getAllTicketByAssignedTo(String empCode) {
+		
+		return ticketRepo.getAllTicketByAssignedTo(empCode);
+	}
+	
+	@Override
 	public TicketVO getTicketById(Long id) {
 		// TODO Auto-generated method stub
 		return ticketRepo.findById(id).get();
@@ -77,5 +85,14 @@ public class TicketServicelmpl  implements TicketService{
 		ticketVO.setMflag(true);
 		return ticketRepo.save(ticketVO);
 	}
+	
+	@Transactional
+    public void updateMflagForAssignedTo(String empCode) {
+		ticketRepo.updateMflagByAssignedTo(empCode);
+    }
+
+	
+
+	
 	
 }
