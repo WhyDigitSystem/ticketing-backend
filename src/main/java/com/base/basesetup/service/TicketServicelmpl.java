@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -50,9 +51,20 @@ public class TicketServicelmpl  implements TicketService{
 	}
 	
 	@Override
-	public List<TicketVO> getAllTicketByAssignedTo(String empCode) {
+	public List<TicketVO> getAllTicketByAssignedTo(String empCode,String userType) {
+		System.out.println(userType);
+		List<TicketVO>ticketVOs= new ArrayList<>();
+		if("Admin".equals(userType))
+		{
+			ticketVOs= ticketRepo.findAll();
+			
+		}
+		else {
+			ticketVOs= ticketRepo.getAllTicketByAssignedTo(empCode);
+		}
 		
-		return ticketRepo.getAllTicketByAssignedTo(empCode);
+		return ticketVOs;
+		
 	}
 	
 	@Override

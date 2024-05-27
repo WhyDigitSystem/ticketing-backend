@@ -20,7 +20,7 @@ public interface TicketService {
 	
 	List<TicketVO> getAllTicket();
 	
-	List<TicketVO> getAllTicketByAssignedTo(String empCode);
+	List<TicketVO> getAllTicketByAssignedTo(String empCode,String userType);
 	
 	TicketVO assignTicket(AssignTicketDTO assignTicketDTO);
 

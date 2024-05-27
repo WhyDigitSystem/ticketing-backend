@@ -69,15 +69,15 @@ public class TicketController extends BaseController {
 	}
 	
 	@GetMapping("/getAllTicketByAssignedTo")
-	public ResponseEntity<ResponseDTO> getAllTicketByAssignedTo(@RequestParam String empCode) {
-		String methodName = "getAllTicket()";
+	public ResponseEntity<ResponseDTO> getAllTicketByAssignedTo(@RequestParam (required = false) String empCode,@RequestParam String userType) {
+		String methodName = "getAllTicketByAssignedTo()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		List<TicketVO> ticketVO = null;
 		try {
-			ticketVO = ticketService.getAllTicketByAssignedTo(empCode);
+			ticketVO = ticketService.getAllTicketByAssignedTo(empCode,userType);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
