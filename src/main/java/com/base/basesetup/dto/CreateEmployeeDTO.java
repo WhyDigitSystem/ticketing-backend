@@ -39,5 +39,7 @@ public class CreateEmployeeDTO {
 	
 	private boolean active;
 	
+	private String email;
+	
 		
 }

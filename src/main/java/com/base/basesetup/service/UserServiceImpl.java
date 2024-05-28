@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
 		userVO.setActive(false);
 		userVO.setUserName(signUpRequest.getUserName());
 		userVO.setEmail(signUpRequest.getEmail());
+		userVO.setCompany(signUpRequest.getCompany());
 		try {
 			userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(signUpRequest.getPassword())));
 		} catch (Exception e) {
