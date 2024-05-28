@@ -124,6 +124,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 			employeeVO.setDesignation(createEmployeeDTO.getDesignation());
 			employeeVO.setDob(createEmployeeDTO.getDob());
 			employeeVO.setDoj(createEmployeeDTO.getDoj());
+			employeeVO.setEmail(createEmployeeDTO.getEmail());
 			try {
 				employeeVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(createEmployeeDTO.getPassword())));
 			} catch (Exception e) {
