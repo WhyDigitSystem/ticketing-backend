@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile; 
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
@@ -26,7 +26,6 @@ import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.TicketVO;
-import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.service.TicketService;
 
 @CrossOrigin

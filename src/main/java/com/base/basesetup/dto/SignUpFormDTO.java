@@ -27,6 +27,8 @@ public class SignUpFormDTO {
 	private String email;
 
 	private String password;
+	
+	private String company;
 
 //	@Size(min = 2, max = 13, message = "Please provide Valid Phone Number")
 //	private String phoneNumber;
