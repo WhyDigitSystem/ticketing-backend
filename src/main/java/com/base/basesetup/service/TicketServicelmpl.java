@@ -169,4 +169,9 @@ public class TicketServicelmpl implements TicketService {
 		return commentsRepo.findCommentsByTicketId(ticketId);
 	}
 
+	@Override
+	public List<Object[]> getTicketStatusByClient(String customer) {
+		return ticketRepo.getTicketStatusByClient(customer);
+	}
+
 }

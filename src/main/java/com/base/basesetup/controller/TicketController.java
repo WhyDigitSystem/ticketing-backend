@@ -1,5 +1,6 @@
 package com.base.basesetup.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -303,8 +304,47 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getTicketStatusByClient")
+	public ResponseEntity<ResponseDTO> getTicketStatusByClient(@RequestParam String customer) {
+		String methodName = "getTicketStatusByClient()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Object[]> ticketVO = new ArrayList<>();
+		try {
+			ticketVO = ticketService.getTicketStatusByClient(customer);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			List<Map<String, Object>>getTicketDetails=getTicketDetailsByClient(ticketVO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets");
+			responseObjectsMap.put("ticketStatusDetails", getTicketDetails);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Information", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
-//    Comments
+private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticketVO) {
+		List<Map<String, Object>>getTicketDetails= new ArrayList<>();
+		for(Object[] tick:ticketVO) {
+			Map<String, Object> tickdetails=new HashMap<>();
+			tickdetails.put("customer", tick[0] != null ? tick[0].toString() : "");
+			tickdetails.put("totalTicket", tick[1] != null ? Integer.parseInt(tick[1].toString()) : 0);
+			tickdetails.put("status", tick[2] != null ? tick[2].toString() : "");
+			tickdetails.put("statusCount", tick[3] != null ? Integer.parseInt(tick[3].toString()) : 0);
+			getTicketDetails.add(tickdetails);
+		}
+		return getTicketDetails;
+	}
+
+	//    Comments
 	@DeleteMapping("/deleteCommentsById/{id}")
 	public ResponseEntity<?> deleteComment(@PathVariable Long id) {
 		return ticketService.deleteComments(id);

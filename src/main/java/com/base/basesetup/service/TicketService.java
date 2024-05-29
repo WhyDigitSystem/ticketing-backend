@@ -51,6 +51,8 @@ public interface TicketService {
 	ResponseEntity<?> deleteComments(Long id);
 	
 	List<CommentsVO> getCommentsByTicketId(Long ticketId);
+	
+	List<Object[]>getTicketStatusByClient(String customer);
 
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
