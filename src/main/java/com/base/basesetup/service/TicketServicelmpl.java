@@ -8,23 +8,31 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
+import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketVO;
+import com.base.basesetup.repo.CommentsRepo;
 import com.base.basesetup.repo.TicketRepo;
 
 @Service
-public class TicketServicelmpl  implements TicketService{
-	
+public class TicketServicelmpl implements TicketService {
+
 	@Autowired
 	TicketRepo ticketRepo;
 
+	@Autowired
+	CommentsRepo commentsRepo;
+
 	@Override
 	public TicketVO createTicket(CreateTicketDTO createTicketDTO) {
-		
+
 		TicketVO tvo = new TicketVO();
 		tvo.setTitle(createTicketDTO.getTitle());
 		tvo.setDescription(createTicketDTO.getDescription());
@@ -33,40 +41,38 @@ public class TicketServicelmpl  implements TicketService{
 		tvo.setModifiedBy(createTicketDTO.getModifiedBy());
 		tvo.setCreatedBy(createTicketDTO.getCreatedBy());
 		tvo.setStatus("Yet To Assign");
-		
+
 		return ticketRepo.save(tvo);
 	}
-	
+
 	@Override
-	public TicketVO saveTicketIssueImage(MultipartFile file,Long id) throws IOException {
+	public TicketVO saveTicketIssueImage(MultipartFile file, Long id) throws IOException {
 		TicketVO ticketVO = ticketRepo.findById(id).get();
 		ticketVO.setImageData(file.getBytes());
-        return ticketRepo.save(ticketVO);
-    }
+		return ticketRepo.save(ticketVO);
+	}
 
 	@Override
 	public List<TicketVO> getAllTicket() {
 		// TODO Auto-generated method stub
 		return ticketRepo.findAll();
 	}
-	
+
 	@Override
-	public List<TicketVO> getAllTicketByAssignedTo(String empCode,String userType) {
+	public List<TicketVO> getAllTicketByAssignedTo(String empCode, String userType) {
 		System.out.println(userType);
-		List<TicketVO>ticketVOs= new ArrayList<>();
-		if("Admin".equals(userType))
-		{
-			ticketVOs= ticketRepo.findAll();
-			
+		List<TicketVO> ticketVOs = new ArrayList<>();
+		if ("Admin".equals(userType)) {
+			ticketVOs = ticketRepo.findAll();
+
+		} else {
+			ticketVOs = ticketRepo.getAllTicketByAssignedTo(empCode);
 		}
-		else {
-			ticketVOs= ticketRepo.getAllTicketByAssignedTo(empCode);
-		}
-		
+
 		return ticketVOs;
-		
+
 	}
-	
+
 	@Override
 	public TicketVO getTicketById(Long id) {
 		// TODO Auto-generated method stub
@@ -75,12 +81,12 @@ public class TicketServicelmpl  implements TicketService{
 
 	@Override
 	public TicketVO assignTicket(AssignTicketDTO assignTicketDTO) {
-		
-		TicketVO ticketVO=ticketRepo.findById(assignTicketDTO.getId()).get();
+
+		TicketVO ticketVO = ticketRepo.findById(assignTicketDTO.getId()).get();
 		ticketVO.setStatus(assignTicketDTO.getStatus());
 		ticketVO.setAssignedTo(assignTicketDTO.getAssignedTo());
 		ticketVO.setAssignedToEmp(assignTicketDTO.getAssignedToEmployee());
-		Date currentDate=new Date();
+		Date currentDate = new Date();
 		ticketVO.setAssignedDate(currentDate);
 		ticketVO.setModifiedBy(assignTicketDTO.getModifiedBy());
 		return ticketRepo.save(ticketVO);
@@ -93,18 +99,52 @@ public class TicketServicelmpl  implements TicketService{
 
 	@Override
 	public TicketVO changeMflag(Long id) {
-		TicketVO ticketVO=ticketRepo.findById(id).get();
+		TicketVO ticketVO = ticketRepo.findById(id).get();
 		ticketVO.setMflag(true);
 		return ticketRepo.save(ticketVO);
 	}
-	
+
 	@Transactional
-    public void updateMflagForAssignedTo(String empCode) {
+	public void updateMflagForAssignedTo(String empCode) {
 		ticketRepo.updateMflagByAssignedTo(empCode);
-    }
+	}
 
-	
+//	Comments
 
-	
-	
+	@Override
+	public List<CommentsVO> getAllComments() {
+		return commentsRepo.findAll();
+	}
+
+	@Override
+	public CommentsVO getCommentsById(Long id) {
+		return commentsRepo.findById(id).orElse(null);
+	}
+
+	@Override
+	public CommentsVO creatComments(CommentsVO commentsVO, Long ticketId) {
+		commentsVO.setTicketId(ticketId);
+		return commentsRepo.save(commentsVO);
+	}
+
+	@Override
+	public CommentsVO updateComments(CommentsVO commentsVO, Long ticketId, Long id) {
+		if (commentsRepo.existsById(commentsVO.getId())) {
+			commentsVO.setTicketId(ticketId);
+			return commentsRepo.save(commentsVO);
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + commentsVO.getId());
+		}
+	}
+
+	@Override
+	public ResponseEntity<?> deleteComments(Long id) {
+		if (commentsRepo.existsById(id)) {
+			commentsRepo.deleteById(id);
+			return ResponseEntity.ok().body("Comment with ID " + id + " has been deleted.");
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + id);
+		}
+	}
+
 }

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,22 +26,21 @@ import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.dto.ResponseDTO;
+import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketVO;
 import com.base.basesetup.service.TicketService;
 
 @CrossOrigin
 @RequestMapping("/api/ticket")
 
-
 @RestController
 public class TicketController extends BaseController {
-	
+
 	public static final Logger LOGGER = LoggerFactory.getLogger(TicketController.class);
 
 	@Autowired
 	TicketService ticketService;
-	
-	
+
 	@GetMapping("/getAllTicket")
 	public ResponseEntity<ResponseDTO> getAllTicket() {
 		String methodName = "getAllTicket()";
@@ -60,15 +60,15 @@ public class TicketController extends BaseController {
 			responseObjectsMap.put("ticketVO", ticketVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Unable to Get Ticket Information", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Information", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getAllTicketByAssignedTo")
-	public ResponseEntity<ResponseDTO> getAllTicketByAssignedTo(@RequestParam (required = false) String empCode,@RequestParam String userType) {
+	public ResponseEntity<ResponseDTO> getAllTicketByAssignedTo(@RequestParam(required = false) String empCode,
+			@RequestParam String userType) {
 		String methodName = "getAllTicketByAssignedTo()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -76,7 +76,7 @@ public class TicketController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<TicketVO> ticketVO = null;
 		try {
-			ticketVO = ticketService.getAllTicketByAssignedTo(empCode,userType);
+			ticketVO = ticketService.getAllTicketByAssignedTo(empCode, userType);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
@@ -86,14 +86,12 @@ public class TicketController extends BaseController {
 			responseObjectsMap.put("ticketVO", ticketVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Unable to Get Ticket Information", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Information", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	
 	@PostMapping("/createticket")
 	public ResponseEntity<ResponseDTO> createticket(@RequestBody CreateTicketDTO createTicketDTO) {
 		String methodName = "createticket()";
@@ -106,21 +104,19 @@ public class TicketController extends BaseController {
 			ticketVO = ticketService.createTicket(createTicketDTO);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
-			LOGGER.error("Unable To Create New Ticket", methodName, 
-					errorMsg);
+			LOGGER.error("Unable To Create New Ticket", methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket Successfully Created");
 			responseObjectsMap.put("ticketVO", ticketVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Ticket",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Ticket", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PutMapping("/assignTicket")
 	public ResponseEntity<ResponseDTO> assignTicket(@RequestBody AssignTicketDTO assignTicketDTO) {
 		String methodName = "assignTicket()";
@@ -141,12 +137,12 @@ public class TicketController extends BaseController {
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PutMapping("/changeMflag")
 	public ResponseEntity<ResponseDTO> changeMflag(@RequestParam Long id) {
 		String methodName = "changeMflag()";
@@ -161,18 +157,18 @@ public class TicketController extends BaseController {
 				responseObjectsMap.put("ticketAssign", ticketVO);
 				responseDTO = createServiceResponse(responseObjectsMap);
 			} else {
-				errorMsg = "Ticket not found for ID: " +id;
+				errorMsg = "Ticket not found for ID: " + id;
 				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 			}
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PutMapping("/changeMflagforAllTicket")
 	public ResponseEntity<ResponseDTO> changeMflagforAllTicket(@RequestParam String empCode) {
 		String methodName = "changeMflagforAllTicket()";
@@ -181,19 +177,20 @@ public class TicketController extends BaseController {
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		try {
-		 ticketService.updateMflagForAssignedTo(empCode);
-						
+			ticketService.updateMflagForAssignedTo(empCode);
+
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PostMapping("/upload")
-	public ResponseEntity<ResponseDTO> uploadTicketIssue(@RequestParam("file") MultipartFile file,@RequestParam Long id) {
+	public ResponseEntity<ResponseDTO> uploadTicketIssue(@RequestParam("file") MultipartFile file,
+			@RequestParam Long id) {
 		String methodName = "uploadTicketIssue()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -202,25 +199,23 @@ public class TicketController extends BaseController {
 		TicketVO ticketVO = null;
 		try {
 			ticketVO = ticketService.saveTicketIssueImage(file, id);
-			} catch (Exception e) {
+		} catch (Exception e) {
 			errorMsg = e.getMessage();
-			LOGGER.error("Unable To Create New Ticket", methodName, 
-					errorMsg);
+			LOGGER.error("Unable To Create New Ticket", methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket Successfully Created");
 			responseObjectsMap.put("ticketVO", ticketVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Ticket",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Ticket", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDTO> getImage(@PathVariable Long id) {
+	@GetMapping("/{id}")
+	public ResponseEntity<ResponseDTO> getImage(@PathVariable Long id) {
 		String methodName = "getImage()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -239,12 +234,12 @@ public class TicketController extends BaseController {
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			errorMsg = "Ticket  not found for ID: " + id;
-			responseDTO = createServiceResponseError(responseObjectsMap,  "Ticket  not found", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Ticket  not found", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-    
+
 //    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
 //        Optional<Image> imageOptional = imageService.getImage(id);
 //        if (imageOptional.isPresent()) {
@@ -256,7 +251,7 @@ public class TicketController extends BaseController {
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 //    }
 
-    @GetMapping("/getAllTicketNotification")
+	@GetMapping("/getAllTicketNotification")
 	public ResponseEntity<ResponseDTO> getAllTicketNotification(@RequestParam String empCode) {
 		String methodName = "getAllTicketNotification()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -275,11 +270,35 @@ public class TicketController extends BaseController {
 			responseObjectsMap.put("ticketVO", ticketVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Unable to Get Ticket Information", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Information", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
+//    Comments
+	@DeleteMapping("/deleteCommentsById")
+	public ResponseEntity<?> deleteComment(@PathVariable Long id) {
+		return ticketService.deleteComments(id);
+	}
+
+	@PutMapping("/updateComments")
+	public CommentsVO updateComment(@RequestBody CommentsVO commentsVO, @RequestParam Long ticketId,@RequestParam Long id) {
+		return ticketService.updateComments(commentsVO, ticketId, id);
+	}
+
+	@PostMapping("/createComments")
+	public CommentsVO createComment(@RequestBody CommentsVO commentsVO, @RequestParam Long ticketId) {
+		return ticketService.creatComments(commentsVO, ticketId);
+	}
+
+	@GetMapping("/getCommentsById")
+	public CommentsVO getCommentsById(@PathVariable Long id) {
+		return ticketService.getCommentsById(id);
+	}
+
+	@GetMapping("/getAllComments")
+	public List<CommentsVO> getAllComments() {
+		return ticketService.getAllComments();
+	}
 }
