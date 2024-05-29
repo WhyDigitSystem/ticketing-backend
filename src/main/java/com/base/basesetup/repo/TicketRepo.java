@@ -25,4 +25,7 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
     @Transactional
     @Query("UPDATE TicketVO t SET t.mflag = true WHERE t.assignedTo = ?1 and t.mflag=false")
    	void updateMflagByAssignedTo(String empCode);
+
+	@Query(value = "select a from TicketVO a where a.client=?1")
+	List<TicketVO> getAllTicketByClient(String empCode);
 }

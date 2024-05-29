@@ -12,8 +12,6 @@ public class AssignTicketDTO {
 	private Long id;
 		
 	private String modifiedBy;
-		
-	private String status;
 	
 	private String assignedTo;
 

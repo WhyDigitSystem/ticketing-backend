@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.base.basesetup.dto.AssignTicketDTO;
+import com.base.basesetup.dto.ChangeTicketStatusDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketVO;
@@ -65,9 +67,15 @@ public class TicketServicelmpl implements TicketService {
 		if ("Admin".equals(userType)) {
 			ticketVOs = ticketRepo.findAll();
 
-		} else {
-			ticketVOs = ticketRepo.getAllTicketByAssignedTo(empCode);
+		} 
+		else if ("Employee".equals(userType)){
+			ticketVOs= ticketRepo.getAllTicketByAssignedTo(empCode);
 		}
+		else
+		{
+			ticketVOs= ticketRepo.getAllTicketByClient(empCode);
+		} 
+		
 
 		return ticketVOs;
 
@@ -83,7 +91,7 @@ public class TicketServicelmpl implements TicketService {
 	public TicketVO assignTicket(AssignTicketDTO assignTicketDTO) {
 
 		TicketVO ticketVO = ticketRepo.findById(assignTicketDTO.getId()).get();
-		ticketVO.setStatus(assignTicketDTO.getStatus());
+		ticketVO.setStatus("Inprogress");
 		ticketVO.setAssignedTo(assignTicketDTO.getAssignedTo());
 		ticketVO.setAssignedToEmp(assignTicketDTO.getAssignedToEmployee());
 		Date currentDate = new Date();
@@ -109,10 +117,10 @@ public class TicketServicelmpl implements TicketService {
 		ticketRepo.updateMflagByAssignedTo(empCode);
 	}
 
-//	Comments
+
 
 	@Override
-	public List<CommentsVO> getAllComments() {
+	public List <CommentsVO> getAllComments() {
 		return commentsRepo.findAll();
 	}
 
@@ -145,6 +153,17 @@ public class TicketServicelmpl implements TicketService {
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + id);
 		}
+	}
+	@Override
+	public TicketVO changeTicketStatus(ChangeTicketStatusDTO changeTicketStatusDTO) {
+	
+		TicketVO ticketVO=ticketRepo.findById(changeTicketStatusDTO.getId()).get();
+		ticketVO.setStatus(changeTicketStatusDTO.getStatus());
+		ticketVO.setModifiedBy(changeTicketStatusDTO.getEmpCode());
+		ticketVO.setCompletedBy(changeTicketStatusDTO.getEmpCode());
+		Date currentDate=new Date();
+		ticketVO.setCompletedOn(currentDate);
+		return ticketRepo.save(ticketVO);
 	}
 
 }

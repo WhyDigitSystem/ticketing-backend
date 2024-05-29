@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.AssignTicketDTO;
+import com.base.basesetup.dto.ChangeTicketStatusDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketVO;
@@ -25,6 +26,8 @@ public interface TicketService {
 	List<TicketVO> getAllTicketByAssignedTo(String empCode, String userType);
 
 	TicketVO assignTicket(AssignTicketDTO assignTicketDTO);
+	
+	TicketVO changeTicketStatus(ChangeTicketStatusDTO changeTicketStatusDTO);
 
 	TicketVO saveTicketIssueImage(MultipartFile file, Long id) throws IOException;
 
@@ -49,4 +52,5 @@ public interface TicketService {
 
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
+
 }
