@@ -34,7 +34,7 @@ public class CommentsVO {
 	@Column(name = "commentname")
 	private String commentName;
 	@Column(name = "commenttime")
-	private LocalDateTime commentsTime;
+	private LocalDateTime commentsTime= LocalDateTime.now();
 	@Column(name = "ticketid")
 	private Long ticketId;
 

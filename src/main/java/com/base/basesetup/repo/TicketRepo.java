@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketVO;
 
 public interface TicketRepo extends JpaRepository<TicketVO, Long> {
@@ -28,4 +29,6 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 
 	@Query(value = "select a from TicketVO a where a.client=?1")
 	List<TicketVO> getAllTicketByClient(String empCode);
+
+	
 }

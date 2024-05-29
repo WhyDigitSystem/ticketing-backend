@@ -49,6 +49,8 @@ public interface TicketService {
 	CommentsVO updateComments(CommentsVO commentsVO,Long ticketId,Long id);
 
 	ResponseEntity<?> deleteComments(Long id);
+	
+	List<CommentsVO> getCommentsByTicketId(Long ticketId);
 
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);

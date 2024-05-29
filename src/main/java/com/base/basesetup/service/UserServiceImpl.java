@@ -269,4 +269,9 @@ public class UserServiceImpl implements UserService {
 			throw new ApplicationContextException(UserConstants.ERRROR_MSG_INVALID_USER_NAME);
 		}
 	}
+
+	@Override
+	public UserVO getEmployeeAndCustomerCount(Long userId) {
+		return userRepo.findEmployeeAndCustomerCount(userId);
+	}
 }

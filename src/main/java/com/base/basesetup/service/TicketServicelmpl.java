@@ -147,12 +147,10 @@ public class TicketServicelmpl implements TicketService {
 
 	@Override
 	public ResponseEntity<?> deleteComments(Long id) {
-		if (commentsRepo.existsById(id)) {
+		
 			commentsRepo.deleteById(id);
 			return ResponseEntity.ok().body("Comment with ID " + id + " has been deleted.");
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + id);
-		}
+		
 	}
 	@Override
 	public TicketVO changeTicketStatus(ChangeTicketStatusDTO changeTicketStatusDTO) {
@@ -164,6 +162,11 @@ public class TicketServicelmpl implements TicketService {
 		Date currentDate=new Date();
 		ticketVO.setCompletedOn(currentDate);
 		return ticketRepo.save(ticketVO);
+	}
+
+	@Override
+	public List<CommentsVO> getCommentsByTicketId(Long ticketId) {
+		return commentsRepo.findCommentsByTicketId(ticketId);
 	}
 
 }

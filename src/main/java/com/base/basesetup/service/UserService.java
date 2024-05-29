@@ -20,5 +20,5 @@ public interface UserService {
 	public UserVO getUserByUserName(String userName);
 	public void createUserAction(String userName, long userId, String actionType);
 	public void removeUser(String userName);
-
+	UserVO getEmployeeAndCustomerCount(Long userId);
 }

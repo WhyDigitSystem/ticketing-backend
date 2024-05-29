@@ -305,7 +305,7 @@ public class TicketController extends BaseController {
 	}
 
 //    Comments
-	@DeleteMapping("/deleteCommentsById")
+	@DeleteMapping("/deleteCommentsById/{id}")
 	public ResponseEntity<?> deleteComment(@PathVariable Long id) {
 		return ticketService.deleteComments(id);
 	}
@@ -320,7 +320,7 @@ public class TicketController extends BaseController {
 		return ticketService.creatComments(commentsVO, ticketId);
 	}
 
-	@GetMapping("/getCommentsById")
+	@GetMapping("/getCommentsById/{id}")
 	public CommentsVO getCommentsById(@PathVariable Long id) {
 		return ticketService.getCommentsById(id);
 	}
@@ -328,5 +328,10 @@ public class TicketController extends BaseController {
 	@GetMapping("/getAllComments")
 	public List<CommentsVO> getAllComments() {
 		return ticketService.getAllComments();
+	}
+	
+	@GetMapping("/getCommentsByTicketId")
+	public List<CommentsVO> getCommentsByTicketId(@RequestParam Long ticketId){
+		return ticketService.getCommentsByTicketId(ticketId);
 	}
 }
