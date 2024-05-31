@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import com.base.basesetup.dto.ChangePasswordFormDTO;
 import com.base.basesetup.dto.LoginFormDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
+import com.base.basesetup.dto.UserCountDTO;
 import com.base.basesetup.entity.UserActionVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.repo.UserActionRepo;
@@ -270,8 +272,12 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	@Override
-	public UserVO getEmployeeAndCustomerCount(Long userId) {
-		return userRepo.findEmployeeAndCustomerCount(userId);
-	}
+		@Override
+		public UserCountDTO getEmployeeAndCustomerCount() {
+			 List<Object[]> results = userRepo.findEmployeeAndCustomerCount();
+		        Object[] result = results.get(0);
+		        Long totalCustomer = ((Number) result[0]).longValue();
+		        Long totalEmployee = ((Number) result[1]).longValue();
+		        return new UserCountDTO(totalCustomer, totalEmployee);
+		    }
 }

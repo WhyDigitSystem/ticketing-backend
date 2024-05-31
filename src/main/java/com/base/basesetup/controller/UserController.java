@@ -34,6 +34,7 @@ import com.base.basesetup.dto.LoginFormDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
+import com.base.basesetup.dto.UserCountDTO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.service.UserService;
 @CrossOrigin
@@ -220,27 +221,28 @@ public class UserController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	@GetMapping("/getEmployeeAndCustomerCount")
-	public ResponseEntity<ResponseDTO> getEmployeeAndCustomerCount(@RequestParam Long userId) {
-		String methodName = "getEmployeeAndCustomerCount()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		try {
-			userService.getEmployeeAndCustomerCount(userId);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_NAME, methodName, userId, errorMsg);
-		}
-		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, UserConstants.USER_REMOVED_SUCCESS_MESSAGE);
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, UserConstants.USER_REMOVE_FAILED_MESSAGE,
-					errorMsg);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
-	}
+	
+	  @GetMapping("/getEmployeeAndCustomerCount")
+	    public ResponseEntity<ResponseDTO> getEmployeeAndCustomerCount() {
+	        String methodName = "getEmployeeAndCustomerCount()";
+	        LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+	        String errorMsg = null;
+	        Map<String, Object> responseObjectsMap = new HashMap<>();
+	        ResponseDTO responseDTO = null;
+	        try {
+	            UserCountDTO userCountDTO = userService.getEmployeeAndCustomerCount();
+	            responseObjectsMap.put("userCount", userCountDTO);
+	        } catch (Exception e) {
+	            errorMsg = e.getMessage();
+	            LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+	        }
+	        if (StringUtils.isBlank(errorMsg)) {
+	            responseObjectsMap.put(CommonConstant.STRING_MESSAGE,"successfullly counted");
+	            responseDTO = createServiceResponse(responseObjectsMap);
+	        } else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get count Information", errorMsg);
+			}
+	        LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+	        return ResponseEntity.ok().body(responseDTO);
+	    }
 }

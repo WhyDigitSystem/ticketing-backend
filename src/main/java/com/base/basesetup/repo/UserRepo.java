@@ -1,5 +1,7 @@
 package com.base.basesetup.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,7 +20,10 @@ public interface UserRepo extends JpaRepository<UserVO, Long> {
 
 	boolean existsByUserName(String code);
 
-	@Query(nativeQuery = true,value = "SELECT COUNT(CASE WHEN type = 'customer' THEN 1 END) AS total_customer,COUNT(CASE WHEN type = 'employee' THEN 1 END) AS total_employee FROM users;")
-	UserVO findEmployeeAndCustomerCount(Long userId);
+	@Query(nativeQuery = true, value = "SELECT " +
+            "COUNT(CASE WHEN type = 'customer' THEN 1 END) AS total_customer, " +
+            "COUNT(CASE WHEN type = 'employee' THEN 1 END) AS total_employee " +
+            "FROM users ")
+	List<Object[]> findEmployeeAndCustomerCount();
 
 }

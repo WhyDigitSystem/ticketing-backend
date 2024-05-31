@@ -6,6 +6,7 @@ import com.base.basesetup.dto.ChangePasswordFormDTO;
 import com.base.basesetup.dto.LoginFormDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
+import com.base.basesetup.dto.UserCountDTO;
 import com.base.basesetup.entity.UserVO;
 
 @Service
@@ -20,5 +21,5 @@ public interface UserService {
 	public UserVO getUserByUserName(String userName);
 	public void createUserAction(String userName, long userId, String actionType);
 	public void removeUser(String userName);
-	UserVO getEmployeeAndCustomerCount(Long userId);
+	public UserCountDTO getEmployeeAndCustomerCount();
 }

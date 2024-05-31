@@ -34,13 +34,8 @@ public class UserVO {
 	private String password;
 	private String type;
 	private String company;
-//	private String secondaryPhone;
 	private boolean loginStatus;
 	private boolean isActive;
-//	@Enumerated(EnumType.STRING)
-//	private Gender gender;
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-dd-MM")
-//	private LocalDate dob;
 
 
 	@Embedded
