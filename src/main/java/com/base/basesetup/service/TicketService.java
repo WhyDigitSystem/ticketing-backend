@@ -11,6 +11,7 @@ import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangeTicketStatusDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.CommentsVO;
+import com.base.basesetup.entity.TicketCommentImageVO;
 import com.base.basesetup.entity.TicketVO;
 
 @Service
@@ -47,6 +48,10 @@ public interface TicketService {
 	CommentsVO creatComments(CommentsVO commentsVO,Long ticketId);
 
 	CommentsVO updateComments(CommentsVO commentsVO,Long ticketId,Long id);
+	
+	TicketCommentImageVO saveTicketCommentImage(MultipartFile file,Long commentId) throws IOException;
+	
+	List<TicketCommentImageVO> getAllCommentImageByCommentId(Long commentId);
 
 	ResponseEntity<?> deleteComments(Long id);
 	

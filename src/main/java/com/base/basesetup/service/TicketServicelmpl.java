@@ -1,7 +1,6 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,8 +18,10 @@ import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangeTicketStatusDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.CommentsVO;
+import com.base.basesetup.entity.TicketCommentImageVO;
 import com.base.basesetup.entity.TicketVO;
 import com.base.basesetup.repo.CommentsRepo;
+import com.base.basesetup.repo.TicketCommentImageRepo;
 import com.base.basesetup.repo.TicketRepo;
 
 @Service
@@ -31,6 +32,9 @@ public class TicketServicelmpl implements TicketService {
 
 	@Autowired
 	CommentsRepo commentsRepo;
+	
+	@Autowired
+	TicketCommentImageRepo ticketCommentImageRepo;
 
 	@Override
 	public TicketVO createTicket(CreateTicketDTO createTicketDTO) {
@@ -172,6 +176,20 @@ public class TicketServicelmpl implements TicketService {
 	@Override
 	public List<Object[]> getTicketStatusByClient(String customer) {
 		return ticketRepo.getTicketStatusByClient(customer);
+	}
+
+	@Override
+	public TicketCommentImageVO saveTicketCommentImage(MultipartFile file,Long commentId) throws IOException {
+		TicketCommentImageVO ticketCommentImageVO = new TicketCommentImageVO();
+		ticketCommentImageVO.setCommentId(commentId);
+		ticketCommentImageVO.setCommentImage(file.getBytes());
+		return ticketCommentImageRepo.save(ticketCommentImageVO);
+	}
+
+	@Override
+	public List<TicketCommentImageVO> getAllCommentImageByCommentId(Long commentId) {
+		
+		return ticketCommentImageRepo.findCommentImageByComentId(commentId);
 	}
 
 }

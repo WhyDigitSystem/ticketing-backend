@@ -29,6 +29,7 @@ import com.base.basesetup.dto.ChangeTicketStatusDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.CommentsVO;
+import com.base.basesetup.entity.TicketCommentImageVO;
 import com.base.basesetup.entity.TicketVO;
 import com.base.basesetup.service.TicketService;
 
@@ -373,5 +374,56 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 	@GetMapping("/getCommentsByTicketId")
 	public List<CommentsVO> getCommentsByTicketId(@RequestParam Long ticketId){
 		return ticketService.getCommentsByTicketId(ticketId);
+	}
+	
+	@GetMapping("/getAllCommentImagesByCommentId")
+	public ResponseEntity<ResponseDTO> getAllCommentImagesByCommentId(@RequestParam Long commentId) {
+		String methodName = "getAllCommentImagesByCommentId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<TicketCommentImageVO> commentImage = null;
+		try {
+			commentImage = ticketService.getAllCommentImageByCommentId(commentId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Comment Image Tickets");
+			responseObjectsMap.put("commentImageVO", commentImage);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Comment Image Information", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@PostMapping("/uploadCommentImage")
+	public ResponseEntity<ResponseDTO> uploadCommentImage(@RequestParam("file") MultipartFile file,
+			@RequestParam Long commentId) {
+		String methodName = "uploadCommentImage()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		TicketCommentImageVO ticketCommentImageVO = null;
+		try {
+			ticketCommentImageVO = ticketService.saveTicketCommentImage(file, commentId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Unable To Create New Ticket", methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Comment Image Successfully Saved");
+			responseObjectsMap.put("ticketCommentImageVO", ticketCommentImageVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Save Comment Image", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
 }
