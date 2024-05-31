@@ -73,6 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 			userVO.setUserName(employeeVO.getCode());
 			userVO.setType(employeeVO.getRole());
 			userVO.setActive(employeeVO.isActive());
+			userVO.setEmail(employeeVO.getEmail());
 			userVO.setFirstName(employeeVO.getEmployee());
 			try {
 				userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(createEmployeeDTO.getPassword())));
@@ -141,6 +142,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 			userVO.setType(employeeVO.getRole());
 			userVO.setActive(employeeVO.isActive());
 			userVO.setFirstName(employeeVO.getEmployee());
+			userVO.setEmail(employeeVO.getEmail());
+			userVO.setCompany("EFIT");
 			try {
 				userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(createEmployeeDTO.getPassword())));
 			} catch (Exception e) {
