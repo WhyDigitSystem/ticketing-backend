@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangeTicketStatusDTO;
+import com.base.basesetup.dto.CommentDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketCommentImageVO;
@@ -134,18 +135,24 @@ public class TicketServicelmpl implements TicketService {
 	}
 
 	@Override
-	public CommentsVO creatComments(CommentsVO commentsVO, Long ticketId) {
-		commentsVO.setTicketId(ticketId);
+	public CommentsVO creatComments(CommentDTO commentDTO) {
+		CommentsVO commentsVO = new CommentsVO();
+        commentsVO.setComment(commentDTO.getComment());
+        commentsVO.setCommentName(commentDTO.getCommentName());
+        commentsVO.setTicketId(commentDTO.getTicketId());
 		return commentsRepo.save(commentsVO);
 	}
 
 	@Override
-	public CommentsVO updateComments(CommentsVO commentsVO, Long ticketId, Long id) {
-		if (commentsRepo.existsById(commentsVO.getId())) {
-			commentsVO.setTicketId(ticketId);
+	public CommentsVO updateComments(CommentDTO commentDTO) {
+		if (commentsRepo.existsById(commentDTO.getId())) {
+			CommentsVO commentsVO =commentsRepo.findById(commentDTO.getId()).get();
+			commentsVO.setComment(commentDTO.getComment());
+	        commentsVO.setCommentName(commentDTO.getCommentName());
+	        commentsVO.setTicketId(commentDTO.getTicketId());
 			return commentsRepo.save(commentsVO);
 		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + commentsVO.getId());
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + commentDTO.getId());
 		}
 	}
 
@@ -180,8 +187,9 @@ public class TicketServicelmpl implements TicketService {
 
 	@Override
 	public TicketCommentImageVO saveTicketCommentImage(MultipartFile file,Long commentId) throws IOException {
+		CommentsVO commentsVO=commentsRepo.findById(commentId).get();
 		TicketCommentImageVO ticketCommentImageVO = new TicketCommentImageVO();
-		ticketCommentImageVO.setCommentId(commentId);
+		ticketCommentImageVO.setCommentsVO(commentsVO);
 		ticketCommentImageVO.setCommentImage(file.getBytes());
 		return ticketCommentImageRepo.save(ticketCommentImageVO);
 	}

@@ -9,7 +9,7 @@ import com.base.basesetup.entity.TicketCommentImageVO;
 
 public interface TicketCommentImageRepo  extends JpaRepository<TicketCommentImageVO, Long>{
 
-	@Query("select a from TicketCommentImageVO a where a.commentId=?1")
+	@Query(nativeQuery = true,value = "select a.* from ticketcommentimage a where a.comment_id=?1")
 	List<TicketCommentImageVO> findCommentImageByComentId(Long commentId);
 
 }

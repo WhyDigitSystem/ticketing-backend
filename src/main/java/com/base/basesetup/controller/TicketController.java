@@ -26,6 +26,7 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangeTicketStatusDTO;
+import com.base.basesetup.dto.CommentDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.CommentsVO;
@@ -352,13 +353,13 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 	}
 
 	@PutMapping("/updateComments")
-	public CommentsVO updateComment(@RequestBody CommentsVO commentsVO, @RequestParam Long ticketId,@RequestParam Long id) {
-		return ticketService.updateComments(commentsVO, ticketId, id);
+	public CommentsVO updateComment(@RequestBody CommentDTO commentsVO) {
+		return ticketService.updateComments(commentsVO);
 	}
 
 	@PostMapping("/createComments")
-	public CommentsVO createComment(@RequestBody CommentsVO commentsVO, @RequestParam Long ticketId) {
-		return ticketService.creatComments(commentsVO, ticketId);
+	public CommentsVO createComment(@RequestBody CommentDTO commentsVO) {
+		return ticketService.creatComments(commentsVO);
 	}
 
 	@GetMapping("/getCommentsById/{id}")

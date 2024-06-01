@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangeTicketStatusDTO;
+import com.base.basesetup.dto.CommentDTO;
 import com.base.basesetup.dto.CreateTicketDTO;
 import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketCommentImageVO;
@@ -45,9 +46,9 @@ public interface TicketService {
 
 	CommentsVO getCommentsById(Long id);
 
-	CommentsVO creatComments(CommentsVO commentsVO,Long ticketId);
+	CommentsVO creatComments(CommentDTO commentDTO);
 
-	CommentsVO updateComments(CommentsVO commentsVO,Long ticketId,Long id);
+	CommentsVO updateComments(CommentDTO commentDTO);
 	
 	TicketCommentImageVO saveTicketCommentImage(MultipartFile file,Long commentId) throws IOException;
 	
