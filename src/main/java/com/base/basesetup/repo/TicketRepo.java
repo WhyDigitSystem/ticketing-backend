@@ -30,7 +30,7 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 	@Query(value = "select a from TicketVO a where a.client=?1")
 	List<TicketVO> getAllTicketByClient(String empCode);
 
-	@Query(nativeQuery = true, value ="select * from clientTicketStatus where client=?1")
+	@Query(nativeQuery = true, value ="select * from ticketstatus where client=?1")
 	List<Object[]> getTicketStatusByClient(String customer);
 
 	

@@ -338,9 +338,10 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 		for(Object[] tick:ticketVO) {
 			Map<String, Object> tickdetails=new HashMap<>();
 			tickdetails.put("customer", tick[0] != null ? tick[0].toString() : "");
-			tickdetails.put("totalTicket", tick[1] != null ? Integer.parseInt(tick[1].toString()) : 0);
-			tickdetails.put("status", tick[2] != null ? tick[2].toString() : "");
-			tickdetails.put("statusCount", tick[3] != null ? Integer.parseInt(tick[3].toString()) : 0);
+			tickdetails.put("completed", tick[1] != null ? Integer.parseInt(tick[1].toString()) : 0);
+			tickdetails.put("inprogress", tick[2] != null ? Integer.parseInt(tick[2].toString()) : 0);
+			tickdetails.put("yetToAssign", tick[3] != null ? Integer.parseInt(tick[3].toString()) : 0);
+			tickdetails.put("total", tick[4] != null ? Integer.parseInt(tick[4].toString()) : 0);
 			getTicketDetails.add(tickdetails);
 		}
 		return getTicketDetails;
