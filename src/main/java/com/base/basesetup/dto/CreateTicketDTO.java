@@ -21,5 +21,7 @@ public class CreateTicketDTO {
 	private String description;
 	
 	private String priority;
+	
+	private String email;
 		
 }

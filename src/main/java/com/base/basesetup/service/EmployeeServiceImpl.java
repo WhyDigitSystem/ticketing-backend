@@ -127,12 +127,6 @@ public class EmployeeServiceImpl implements EmployeeService{
 			employeeVO.setDob(createEmployeeDTO.getDob());
 			employeeVO.setDoj(createEmployeeDTO.getDoj());
 			employeeVO.setEmail(createEmployeeDTO.getEmail());
-			try {
-				employeeVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(createEmployeeDTO.getPassword())));
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-				throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
-			}
 			employeeVO.setActive(createEmployeeDTO.isActive());
 			employeeVO.setModifiedBy(createEmployeeDTO.getModifiedBy());
 			employeeRepo.save(employeeVO);

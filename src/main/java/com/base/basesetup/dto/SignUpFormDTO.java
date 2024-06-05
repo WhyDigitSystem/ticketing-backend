@@ -30,6 +30,8 @@ public class SignUpFormDTO {
 	
 	private String company;
 	
+	private boolean active;
+	
 
 //	@Size(min = 2, max = 13, message = "Please provide Valid Phone Number")
 //	private String phoneNumber;

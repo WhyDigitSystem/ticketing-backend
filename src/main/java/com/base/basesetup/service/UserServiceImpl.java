@@ -21,6 +21,7 @@ import com.base.basesetup.dto.SignUpFormDTO;
 import com.base.basesetup.dto.UserCountDTO;
 import com.base.basesetup.entity.UserActionVO;
 import com.base.basesetup.entity.UserVO;
+import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.UserActionRepo;
 import com.base.basesetup.repo.UserRepo;
 import com.base.basesetup.util.CryptoUtils;
@@ -280,4 +281,31 @@ public class UserServiceImpl implements UserService {
 		        Long totalEmployee = ((Number) result[1]).longValue();
 		        return new UserCountDTO(totalCustomer, totalEmployee);
 		    }
+
+		@Override
+		public List<UserVO> getAllCustomer() {
+			return userRepo.findAllByType();
+		}
+
+		@Override
+		public UserVO updateCustomer(SignUpFormDTO signUpRequest,Long userId) throws ApplicationException {
+		
+			
+			UserVO userVO = userRepo.findById(userId).get();
+			if(userVO!=null)
+			{
+			userVO.setFirstName(signUpRequest.getFirstName());
+			userVO.setType(signUpRequest.getType());
+			userVO.setActive(signUpRequest.isActive());
+			userVO.setUserName(signUpRequest.getUserName());
+			userVO.setEmail(signUpRequest.getEmail());
+			userVO.setCompany(signUpRequest.getCompany());
+			}
+			else
+			{
+				throw new ApplicationException("User information not found for this id"+userId);
+			}
+			return userRepo.save(userVO);
+			
+		}
 }

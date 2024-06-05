@@ -9,7 +9,9 @@
  */
 package com.base.basesetup.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -22,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,12 +32,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
+import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangePasswordFormDTO;
 import com.base.basesetup.dto.LoginFormDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
 import com.base.basesetup.dto.UserCountDTO;
+import com.base.basesetup.entity.TicketVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.service.UserService;
 @CrossOrigin
@@ -245,4 +250,55 @@ public class UserController extends BaseController {
 	        LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 	        return ResponseEntity.ok().body(responseDTO);
 	    }
+	  
+	  @GetMapping("/getAllCustomer")
+		public ResponseEntity<ResponseDTO> getAllCustomer() {
+			String methodName = "getAllCustomer()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<UserVO> customers = null;
+			try {
+				customers = userService.getAllCustomer();
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Customer");
+				responseObjectsMap.put("usersVO", customers);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Customer Information", errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+	  
+	  @PutMapping("/updateCustomer")
+		public ResponseEntity<ResponseDTO> updateCustomer(@RequestBody SignUpFormDTO signUpFormDTO,@RequestParam Long userId) {
+			String methodName = "updateCustomer()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			try {
+				UserVO userVO = userService.updateCustomer(signUpFormDTO, userId);
+				if (userVO != null) {
+					responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Customer Update successfully");
+					responseObjectsMap.put("userVO", userVO);
+					responseDTO = createServiceResponse(responseObjectsMap);
+				} else {
+					errorMsg = "Customer not found for ID: " + userId;
+					responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+				}
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error("Customer Update Failed", methodName, errorMsg);
+				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
 }

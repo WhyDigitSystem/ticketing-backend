@@ -26,4 +26,7 @@ public interface UserRepo extends JpaRepository<UserVO, Long> {
             "FROM users ")
 	List<Object[]> findEmployeeAndCustomerCount();
 
+	@Query(value = "select u from UserVO u where u.type ='Customer'")
+	List<UserVO> findAllByType();
+
 }

@@ -83,6 +83,8 @@ public class TicketVO {
 	
 	private boolean mflag;
 	
+	private String email;
+	
 	@Lob
     @Column(name = "imagedata", columnDefinition="LONGBLOB")
     private byte[] imageData;
