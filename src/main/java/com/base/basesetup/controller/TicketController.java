@@ -2,8 +2,10 @@ package com.base.basesetup.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -427,5 +429,44 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getEmployeeTicketStatusCounts")
+	public ResponseEntity<ResponseDTO> getEmployeeTicketStatusCount() {
+		String methodName = "getEmployeeTicketStatusCount()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		Set<Object[]> ticketVO = new HashSet<>();
+		try {
+			ticketVO = ticketService.getEmployeeTicketStatusCount();
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			List<Map<String, Object>>ticketStatusDetails=getEmployeeTicketStatus(ticketVO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets Status");
+			responseObjectsMap.put("ticketStatusDetails", ticketStatusDetails);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Status Information", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+private List<Map<String, Object>> getEmployeeTicketStatus(Set<Object[]> ticketVO) {
+		List<Map<String, Object>>ticketStatusDetails= new ArrayList<>();
+		for(Object[] tick:ticketVO) {
+			Map<String, Object> tickdetails=new HashMap<>();
+			tickdetails.put("empCode", tick[0] != null ? tick[0].toString() : "");
+			tickdetails.put("empName", tick[1] != null ? tick[1].toString() : "");
+			tickdetails.put("completed", tick[2] != null ? Integer.parseInt(tick[2].toString()) : 0);
+			tickdetails.put("inprogress", tick[3] != null ? Integer.parseInt(tick[3].toString()) : 0);
+			ticketStatusDetails.add(tickdetails);
+		}
+		return ticketStatusDetails;
 	}
 }

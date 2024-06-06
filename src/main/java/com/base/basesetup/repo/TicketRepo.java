@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -32,6 +33,11 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 
 	@Query(nativeQuery = true, value ="select * from ticketstatus where client=?1")
 	List<Object[]> getTicketStatusByClient(String customer);
+
+	@Query(nativeQuery = true,value="select a.assignedto,a.assignedto_employee,sum(case when status='Completed' then a.total else 0 end) Completed,\r\n"
+			+ "sum(case when status='Inprogress' then a.total else 0 end) Inprogress from(\r\n"
+			+ "select assignedto,assignedto_employee,status,count(*)total from ticket group by assignedto,assignedto_employee,status)a group by a.assignedto,a.assignedto_employee")
+	Set<Object[]> getEmployeeTicketStatusCounts();
 
 	
 }
