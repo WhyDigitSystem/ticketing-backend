@@ -43,6 +43,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 		EmployeeVO employeeVO = new EmployeeVO();
 		if(ObjectUtils.isNotEmpty(createEmployeeDTO)) {
 			employeeVO.setEmployee(createEmployeeDTO.getEmployee());
+			if (employeeRepo.existsByEmail(createEmployeeDTO.getEmail())) {
+				throw new ApplicationException("Employee Email Already Exist");
+			}
 			if (employeeRepo.existsByCode(createEmployeeDTO.getCode())) {
 				throw new ApplicationException("Employee Code Already Exist");
 			}
@@ -66,11 +69,11 @@ public class EmployeeServiceImpl implements EmployeeService{
 			employeeRepo.save(employeeVO);
 			
 			UserVO userVO=new UserVO();
-			if(userRepo.existsByUserName(employeeVO.getCode()))
+			if(userRepo.existsByUserName(employeeVO.getEmail()))
 			{
-				throw new ApplicationException("Employee Code Already Exist");
+				throw new ApplicationException("Employee Email Already Exist");
 			}
-			userVO.setUserName(employeeVO.getCode());
+			userVO.setUserName(employeeVO.getEmail());
 			userVO.setType(employeeVO.getRole());
 			userVO.setActive(employeeVO.isActive());
 			userVO.setEmail(employeeVO.getEmail());
@@ -118,6 +121,11 @@ public class EmployeeServiceImpl implements EmployeeService{
 					throw new ApplicationException("Employee Code Already Exist");
 				}
 				employeeVO.setCode(createEmployeeDTO.getCode());
+				
+				if (employeeRepo.existsByEmail(createEmployeeDTO.getEmail())) {
+					throw new ApplicationException("Employee Email Already Exist");
+				}
+				employeeVO.setEmail(createEmployeeDTO.getEmail());
 			}
 			employeeVO.setEmployee(createEmployeeDTO.getEmployee());
 			employeeVO.setGender(createEmployeeDTO.getGender());
@@ -126,24 +134,23 @@ public class EmployeeServiceImpl implements EmployeeService{
 			employeeVO.setDesignation(createEmployeeDTO.getDesignation());
 			employeeVO.setDob(createEmployeeDTO.getDob());
 			employeeVO.setDoj(createEmployeeDTO.getDoj());
-			employeeVO.setEmail(createEmployeeDTO.getEmail());
 			employeeVO.setActive(createEmployeeDTO.isActive());
 			employeeVO.setModifiedBy(createEmployeeDTO.getModifiedBy());
 			employeeRepo.save(employeeVO);
 			
-			UserVO userVO = userRepo.findByUserName(employeeVO.getCode());
-			userVO.setUserName(employeeVO.getCode());
+			UserVO userVO = userRepo.findByUserName(employeeVO.getEmail());
+			userVO.setUserName(employeeVO.getEmail());
 			userVO.setType(employeeVO.getRole());
 			userVO.setActive(employeeVO.isActive());
 			userVO.setFirstName(employeeVO.getEmployee());
 			userVO.setEmail(employeeVO.getEmail());
 			userVO.setCompany("EFIT");
-			try {
-				userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(createEmployeeDTO.getPassword())));
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-				throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
-			}
+//			try {
+//				userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(createEmployeeDTO.getPassword())));
+//			} catch (Exception e) {
+//				LOGGER.error(e.getMessage());
+//				throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
+//			}
 			createUserAction(userVO.getUserName(), userVO.getUserId(), UserConstants.USER_ACTION_ADD_ACCOUNT);
 			userRepo.save(userVO);
 		}

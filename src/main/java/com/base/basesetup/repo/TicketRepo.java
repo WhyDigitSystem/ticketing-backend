@@ -39,5 +39,25 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 			+ "select assignedto,assignedto_employee,status,count(*)total from ticket group by assignedto,assignedto_employee,status)a group by a.assignedto,a.assignedto_employee")
 	Set<Object[]> getEmployeeTicketStatusCounts();
 
+	@Query(nativeQuery = true, value ="select status, count(status)count from ticket group by status")
+	Set<Object[]> getStatusCountDetails();
+
+	@Query(nativeQuery = true, value ="SELECT \r\n"
+			+ "    high,\r\n"
+			+ "    normal,\r\n"
+			+ "    medium,\r\n"
+			+ "    (high + normal + medium) AS total\r\n"
+			+ "FROM (\r\n"
+			+ "    SELECT \r\n"
+			+ "        SUM(CASE WHEN t.priority = 'High' THEN 1 ELSE 0 END) AS high,\r\n"
+			+ "        SUM(CASE WHEN t.priority = 'Normal' THEN 1 ELSE 0 END) AS normal,\r\n"
+			+ "        SUM(CASE WHEN t.priority = 'Medium' THEN 1 ELSE 0 END) AS medium\r\n"
+			+ "    FROM \r\n"
+			+ "        ticket t\r\n"
+			+ "    WHERE \r\n"
+			+ "        t.status = 'Inprogress'\r\n"
+			+ ") AS subquery")
+	Set<Object[]> getPriorityStatusCountDetails();
+
 	
 }

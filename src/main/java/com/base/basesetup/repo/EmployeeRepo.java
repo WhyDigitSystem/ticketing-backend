@@ -8,4 +8,6 @@ public interface EmployeeRepo extends JpaRepository<EmployeeVO, Long> {
 
 	boolean existsByCode(String code);
 
+	boolean existsByEmail(String email);
+
 }

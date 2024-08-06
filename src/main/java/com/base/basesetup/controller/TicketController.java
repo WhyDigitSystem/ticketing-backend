@@ -148,9 +148,9 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PutMapping("/ChangeTicketStatus")
-	public ResponseEntity<ResponseDTO> ChangeTicketStatus(@RequestBody ChangeTicketStatusDTO changeTicketStatusDTO ) {
+	public ResponseEntity<ResponseDTO> ChangeTicketStatus(@RequestBody ChangeTicketStatusDTO changeTicketStatusDTO) {
 		String methodName = "ChangeTicketStatus()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -169,12 +169,11 @@ public class TicketController extends BaseController {
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
 
 	@PutMapping("/changeMflag")
 	public ResponseEntity<ResponseDTO> changeMflag(@RequestParam Long id) {
@@ -308,7 +307,7 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getTicketStatusByClient")
 	public ResponseEntity<ResponseDTO> getTicketStatusByClient(@RequestParam String customer) {
 		String methodName = "getTicketStatusByClient()";
@@ -324,7 +323,7 @@ public class TicketController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			List<Map<String, Object>>getTicketDetails=getTicketDetailsByClient(ticketVO);
+			List<Map<String, Object>> getTicketDetails = getTicketDetailsByClient(ticketVO);
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets");
 			responseObjectsMap.put("ticketStatusDetails", getTicketDetails);
 			responseDTO = createServiceResponse(responseObjectsMap);
@@ -335,10 +334,10 @@ public class TicketController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticketVO) {
-		List<Map<String, Object>>getTicketDetails= new ArrayList<>();
-		for(Object[] tick:ticketVO) {
-			Map<String, Object> tickdetails=new HashMap<>();
+	private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticketVO) {
+		List<Map<String, Object>> getTicketDetails = new ArrayList<>();
+		for (Object[] tick : ticketVO) {
+			Map<String, Object> tickdetails = new HashMap<>();
 			tickdetails.put("customer", tick[0] != null ? tick[0].toString() : "");
 			tickdetails.put("completed", tick[1] != null ? Integer.parseInt(tick[1].toString()) : 0);
 			tickdetails.put("inprogress", tick[2] != null ? Integer.parseInt(tick[2].toString()) : 0);
@@ -349,7 +348,7 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 		return getTicketDetails;
 	}
 
-	//    Comments
+	// Comments
 	@DeleteMapping("/deleteCommentsById/{id}")
 	public ResponseEntity<?> deleteComment(@PathVariable Long id) {
 		return ticketService.deleteComments(id);
@@ -374,12 +373,12 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 	public List<CommentsVO> getAllComments() {
 		return ticketService.getAllComments();
 	}
-	
+
 	@GetMapping("/getCommentsByTicketId")
-	public List<CommentsVO> getCommentsByTicketId(@RequestParam Long ticketId){
+	public List<CommentsVO> getCommentsByTicketId(@RequestParam Long ticketId) {
 		return ticketService.getCommentsByTicketId(ticketId);
 	}
-	
+
 	@GetMapping("/getAllCommentImagesByCommentId")
 	public ResponseEntity<ResponseDTO> getAllCommentImagesByCommentId(@RequestParam Long commentId) {
 		String methodName = "getAllCommentImagesByCommentId()";
@@ -399,12 +398,13 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 			responseObjectsMap.put("commentImageVO", commentImage);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Comment Image Information", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Comment Image Information",
+					errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PostMapping("/uploadCommentImage")
 	public ResponseEntity<ResponseDTO> uploadCommentImage(@RequestParam("file") MultipartFile file,
 			@RequestParam Long commentId) {
@@ -430,7 +430,7 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getEmployeeTicketStatusCounts")
 	public ResponseEntity<ResponseDTO> getEmployeeTicketStatusCount() {
 		String methodName = "getEmployeeTicketStatusCount()";
@@ -446,21 +446,22 @@ private List<Map<String, Object>> getTicketDetailsByClient(List<Object[]> ticket
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			List<Map<String, Object>>ticketStatusDetails=getEmployeeTicketStatus(ticketVO);
+			List<Map<String, Object>> ticketStatusDetails = getEmployeeTicketStatus(ticketVO);
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets Status");
 			responseObjectsMap.put("ticketStatusDetails", ticketStatusDetails);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Status Information", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Status Information",
+					errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-private List<Map<String, Object>> getEmployeeTicketStatus(Set<Object[]> ticketVO) {
-		List<Map<String, Object>>ticketStatusDetails= new ArrayList<>();
-		for(Object[] tick:ticketVO) {
-			Map<String, Object> tickdetails=new HashMap<>();
+	private List<Map<String, Object>> getEmployeeTicketStatus(Set<Object[]> ticketVO) {
+		List<Map<String, Object>> ticketStatusDetails = new ArrayList<>();
+		for (Object[] tick : ticketVO) {
+			Map<String, Object> tickdetails = new HashMap<>();
 			tickdetails.put("empCode", tick[0] != null ? tick[0].toString() : "");
 			tickdetails.put("empName", tick[1] != null ? tick[1].toString() : "");
 			tickdetails.put("completed", tick[2] != null ? Integer.parseInt(tick[2].toString()) : 0);
@@ -469,4 +470,58 @@ private List<Map<String, Object>> getEmployeeTicketStatus(Set<Object[]> ticketVO
 		}
 		return ticketStatusDetails;
 	}
+
+	@GetMapping("/getTicketStatusCount")
+	public ResponseEntity<ResponseDTO> getTicketStatusCount() {
+		String methodName = "getTicketStatusCount()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String,Object>> ticketVO = new ArrayList<>();
+		try {
+			ticketVO = ticketService.getTicketStatusCount();
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets Status");
+			responseObjectsMap.put("ticketStatusDetails", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Status Information",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	@GetMapping("/getTicketPriorityStatusCount")
+	public ResponseEntity<ResponseDTO> getTicketPriorityStatusCount() {
+		String methodName = "getTicketPriorityStatusCount()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String,Object>> ticketVO = new ArrayList<>();
+		try {
+			ticketVO = ticketService.getTicketPriorityStatusCount();
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All Tickets Status");
+			responseObjectsMap.put("ticketPriorityStatusDetails", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Status Information",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 }

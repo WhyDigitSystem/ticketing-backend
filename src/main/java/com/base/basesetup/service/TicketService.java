@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
@@ -59,9 +60,13 @@ public interface TicketService {
 	
 	List<CommentsVO> getCommentsByTicketId(Long ticketId);
 	
-	List<Object[]>getTicketStatusByClient(String customer);
+	List<Object[]> getTicketStatusByClient(String customer);
 	
 	Set<Object[]>getEmployeeTicketStatusCount();
+
+	List<Map<String, Object>> getTicketStatusCount();
+
+	List<Map<String, Object>> getTicketPriorityStatusCount();
 
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);

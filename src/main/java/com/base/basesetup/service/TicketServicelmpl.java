@@ -3,7 +3,9 @@ package com.base.basesetup.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -208,4 +210,43 @@ public class TicketServicelmpl implements TicketService {
 		return ticketRepo.getEmployeeTicketStatusCounts();
 	}
 
+	@Override
+	public List<Map<String, Object>> getTicketStatusCount() {
+		
+		Set<Object[]>getTicketStatusCountDetails=ticketRepo.getStatusCountDetails();
+		return getTicketCount(getTicketStatusCountDetails);
+	}
+
+	private List<Map<String, Object>> getTicketCount(Set<Object[]> getTicketStatusCountDetails) {
+		List<Map<String,Object>> tickets= new ArrayList<>();
+		for(Object[] tick:getTicketStatusCountDetails)
+		{
+			Map<String,Object>t= new HashMap<>();
+			t.put("status", tick[0] != null ? tick[0].toString() : "");
+			t.put("ticketCount", tick[1] != null ? Integer.parseInt(tick[1].toString()) : 0);
+			tickets.add(t);
+		}
+		return tickets;
+	}
+
+	@Override
+	public List<Map<String, Object>> getTicketPriorityStatusCount() {
+		
+		Set<Object[]>getTicketPriorityStatusCountDetails=ticketRepo.getPriorityStatusCountDetails();
+		return getPriorityTicketCount(getTicketPriorityStatusCountDetails);
+	}
+
+	private List<Map<String, Object>> getPriorityTicketCount(Set<Object[]> getTicketPriorityStatusCountDetails) {
+		List<Map<String,Object>> tickets= new ArrayList<>();
+		for(Object[] tick:getTicketPriorityStatusCountDetails)
+		{
+			Map<String,Object>t= new HashMap<>();
+			t.put("high", tick[0] != null ? Integer.parseInt(tick[0].toString()) : 0);
+			t.put("normal", tick[1] != null ? Integer.parseInt(tick[1].toString()) : 0);
+			t.put("medium", tick[2] != null ? Integer.parseInt(tick[2].toString()) : 0);
+			t.put("total", tick[3] != null ? Integer.parseInt(tick[3].toString()) : 0);
+			tickets.add(t);
+		}
+		return tickets;
+	}
 }
