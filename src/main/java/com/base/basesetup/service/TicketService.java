@@ -68,6 +68,8 @@ public interface TicketService {
 
 	List<Map<String, Object>> getTicketPriorityStatusCount();
 
+	TicketVO uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException;
+
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 

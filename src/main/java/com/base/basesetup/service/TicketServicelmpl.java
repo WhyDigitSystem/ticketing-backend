@@ -51,6 +51,7 @@ public class TicketServicelmpl implements TicketService {
 		tvo.setModifiedBy(createTicketDTO.getModifiedBy());
 		tvo.setCreatedBy(createTicketDTO.getCreatedBy());
 		tvo.setEmail(createTicketDTO.getEmail());
+		tvo.setSourceId(createTicketDTO.getSourceId());
 		tvo.setStatus("Yet To Assign");
 
 		return ticketRepo.save(tvo);
@@ -62,6 +63,14 @@ public class TicketServicelmpl implements TicketService {
 		ticketVO.setImageData(file.getBytes());
 		return ticketRepo.save(ticketVO);
 	}
+	
+	@Override
+	public TicketVO uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException {
+		TicketVO ticketVO = ticketRepo.findBySourceId(sourceId);
+		ticketVO.setImageData(file.getBytes());
+		return ticketRepo.save(ticketVO);
+	}
+
 
 	@Override
 	public List<TicketVO> getAllTicket() {

@@ -523,5 +523,32 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@PostMapping("/uploadTicketBySourceId")
+	public ResponseEntity<ResponseDTO> uploadTicketBySourceId(@RequestParam("file") MultipartFile file,
+			@RequestParam Long sourceId) {
+		String methodName = "uploadTicketBySourceId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		TicketVO ticketVO = null;
+		try {
+			ticketVO = ticketService.uploadTicketBySourceId(file, sourceId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Unable To Create New Ticket", methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket Successfully Created");
+			responseObjectsMap.put("ticketVO", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Ticket", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 
 }

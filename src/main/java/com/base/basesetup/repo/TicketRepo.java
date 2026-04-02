@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketVO;
 
 public interface TicketRepo extends JpaRepository<TicketVO, Long> {
@@ -58,6 +57,8 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 			+ "        t.status = 'Inprogress'\r\n"
 			+ ") AS subquery")
 	Set<Object[]> getPriorityStatusCountDetails();
+
+	TicketVO findBySourceId(Long sourceId);
 
 	
 }

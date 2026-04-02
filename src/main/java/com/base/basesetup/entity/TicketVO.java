@@ -69,6 +69,9 @@ public class TicketVO {
 	@Column(name="assignedto")
 	private String assignedTo;
 	
+	@Column(name="sourceid")
+	private Long sourceId;
+	
 	@Column(name="assignedtoEmployee")
 	private String assignedToEmp;
 	
