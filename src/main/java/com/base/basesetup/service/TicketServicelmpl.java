@@ -52,8 +52,12 @@ public class TicketServicelmpl implements TicketService {
 		tvo.setCreatedBy(createTicketDTO.getCreatedBy());
 		tvo.setEmail(createTicketDTO.getEmail());
 		tvo.setSourceId(createTicketDTO.getSourceId());
+		tvo.setSourceOrgId(createTicketDTO.getSourceOrgId());
+		tvo.setSourceBranch(createTicketDTO.getSourceBranch());
+		tvo.setSourceBranchCode(createTicketDTO.getSourceBranchCode());
+		tvo.setCustomer(createTicketDTO.getCustomer());
+		tvo.setProjectName(createTicketDTO.getProjectName());
 		tvo.setStatus("Yet To Assign");
-
 		return ticketRepo.save(tvo);
 	}
 
