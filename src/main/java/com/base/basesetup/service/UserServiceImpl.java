@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 		UserVO userVO = new UserVO();
 		userVO.setFirstName(signUpRequest.getFirstName());
 		userVO.setType(signUpRequest.getType());
-		userVO.setActive(false);
+		userVO.setActive(true);
 		userVO.setUserName(signUpRequest.getUserName());
 		userVO.setEmail(signUpRequest.getEmail());
 		userVO.setCompany(signUpRequest.getCompany());

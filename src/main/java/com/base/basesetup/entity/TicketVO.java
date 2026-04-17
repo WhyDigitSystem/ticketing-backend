@@ -75,7 +75,7 @@ public class TicketVO {
 	private String assignedToEmp;
 
 	@Column(name = "assigneddate")
-	private Date assignedDate;
+	private LocalDate assignedDate;
 
 	@Column(name = "completedby")
 	private String completedBy;
@@ -87,6 +87,9 @@ public class TicketVO {
 
 	@Column(name = "email")
 	private String email;
+	
+	@Column(name = "sourceemail")
+	private String sourceEmail;
 
 	@Column(name = "customer")
 	private String customer;
@@ -102,6 +105,15 @@ public class TicketVO {
 
 	@Column(name = "projectname")
 	private String projectName;
+
+	@Column(name = "application")
+	private String application;
+	
+	@Column(name = "username")
+	private String userName;
+	
+	@Column(name = "ticketstatus")
+	private String ticketStatus;
 
 	@Lob
 	@Column(name = "imagedata", columnDefinition = "LONGBLOB")

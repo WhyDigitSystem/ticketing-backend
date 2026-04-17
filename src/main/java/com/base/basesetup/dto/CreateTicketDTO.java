@@ -37,4 +37,10 @@ public class CreateTicketDTO {
 
 	private String projectName;
 
+	private String application;
+
+	private String sourceEmail;
+	
+	private String ticketStatus;
+
 }

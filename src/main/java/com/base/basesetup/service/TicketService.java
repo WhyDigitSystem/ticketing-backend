@@ -29,8 +29,8 @@ public interface TicketService {
 
 	List<TicketVO> getAllTicketByAssignedTo(String empCode, String userType);
 
-	TicketVO assignTicket(AssignTicketDTO assignTicketDTO);
-	
+	Map<String, Object> assignTicket(AssignTicketDTO assignTicketDTO);
+
 	TicketVO changeTicketStatus(ChangeTicketStatusDTO changeTicketStatusDTO);
 
 	TicketVO saveTicketIssueImage(MultipartFile file, Long id) throws IOException;
@@ -51,25 +51,24 @@ public interface TicketService {
 	CommentsVO creatComments(CommentDTO commentDTO);
 
 	CommentsVO updateComments(CommentDTO commentDTO);
-	
-	TicketCommentImageVO saveTicketCommentImage(MultipartFile file,Long commentId) throws IOException;
-	
+
+	TicketCommentImageVO saveTicketCommentImage(MultipartFile file, Long commentId) throws IOException;
+
 	List<TicketCommentImageVO> getAllCommentImageByCommentId(Long commentId);
 
 	ResponseEntity<?> deleteComments(Long id);
-	
+
 	List<CommentsVO> getCommentsByTicketId(Long ticketId);
-	
+
 	List<Object[]> getTicketStatusByClient(String customer);
-	
-	Set<Object[]>getEmployeeTicketStatusCount();
+
+	Set<Object[]> getEmployeeTicketStatusCount();
 
 	List<Map<String, Object>> getTicketStatusCount();
 
 	List<Map<String, Object>> getTicketPriorityStatusCount();
 
 	TicketVO uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException;
-
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 

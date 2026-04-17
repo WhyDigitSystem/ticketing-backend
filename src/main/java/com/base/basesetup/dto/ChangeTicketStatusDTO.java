@@ -16,17 +16,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangeTicketStatusDTO {
-	
+
 	private Long id;
-	
+
 	private String empCode;
-	
+
 	private String status;
-	
+
+	private String ticketStatus;
+
 	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss a")
-	@Column(name="createdon",length = 25)
+	@Column(name = "createdon", length = 25)
 	private String createdon;
-	
+
 	public void onSave() {
 		Date currentDate = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a");

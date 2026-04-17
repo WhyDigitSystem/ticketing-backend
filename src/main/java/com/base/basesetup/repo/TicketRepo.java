@@ -16,7 +16,7 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 	@Query(value = "select a from TicketVO a where a.assignedTo=?1 and a.mflag=false")
 	List<TicketVO> findNewTicketNotification(String empcode);
 
-	@Query(value = "select a from TicketVO a where a.assignedTo=?1")
+	@Query(value = "select a from TicketVO a where a.email=?1")
 	List<TicketVO> getAllTicketByAssignedTo(String empCode);
 
 	@Query(value = "select a from TicketVO a where a.assignedTo=?1")
@@ -48,14 +48,12 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 			+ "    (high + normal + medium) AS total\r\n"
 			+ "FROM (\r\n"
 			+ "    SELECT \r\n"
-			+ "        SUM(CASE WHEN t.priority = 'High' THEN 1 ELSE 0 END) AS high,\r\n"
-			+ "        SUM(CASE WHEN t.priority = 'Normal' THEN 1 ELSE 0 END) AS normal,\r\n"
-			+ "        SUM(CASE WHEN t.priority = 'Medium' THEN 1 ELSE 0 END) AS medium\r\n"
+			+ "        SUM(CASE WHEN UPPER(t.priority) = 'HIGH' THEN 1 ELSE 0 END) AS high,\r\n"
+			+ "        SUM(CASE WHEN UPPER(t.priority) = 'NORMAL' THEN 1 ELSE 0 END) AS normal,\r\n"
+			+ "        SUM(CASE WHEN UPPER(t.priority) = 'MEDIUM' THEN 1 ELSE 0 END) AS medium\r\n"
 			+ "    FROM \r\n"
 			+ "        ticket t\r\n"
-			+ "    WHERE \r\n"
-			+ "        t.status = 'Inprogress'\r\n"
-			+ ") AS subquery")
+			+ ") subquery")
 	Set<Object[]> getPriorityStatusCountDetails();
 
 	TicketVO findBySourceId(Long sourceId);

@@ -125,28 +125,41 @@ public class TicketController extends BaseController {
 
 	@PutMapping("/assignTicket")
 	public ResponseEntity<ResponseDTO> assignTicket(@RequestBody AssignTicketDTO assignTicketDTO) {
-		String methodName = "assignTicket()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		try {
-			TicketVO ticketVO = ticketService.assignTicket(assignTicketDTO);
-			if (ticketVO != null) {
-				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket Assign successfully");
-				responseObjectsMap.put("ticketAssign", ticketVO);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} else {
-				errorMsg = "Ticket not found for ID: " + assignTicketDTO.getId();
-				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-			}
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error("Ticket Assign Failed", methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
+
+	    String methodName = "assignTicket()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    String errorMsg = null;
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+	    ResponseDTO responseDTO = null;
+
+	    try {
+	        // ✅ FIX: receive Map instead of TicketVO
+	        Map<String, Object> serviceResponse = ticketService.assignTicket(assignTicketDTO);
+
+	        if (serviceResponse != null) {
+
+	            responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+	                    serviceResponse.get("message"));
+
+	            responseObjectsMap.put("ticketAssign",
+	                    serviceResponse.get("ticket"));
+
+	            responseDTO = createServiceResponse(responseObjectsMap);
+
+	        } else {
+	            errorMsg = "Ticket not found for ID: " + assignTicketDTO.getId();
+	            responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+	        }
+
+	    } catch (Exception e) {
+	        errorMsg = e.getMessage();
+	        LOGGER.error("Ticket Assign Failed: {}", errorMsg, e);
+	        responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+	    return ResponseEntity.ok(responseDTO);
 	}
 
 	@PutMapping("/ChangeTicketStatus")

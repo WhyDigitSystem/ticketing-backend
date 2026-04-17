@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignTicketDTO {
-	
+
 	private Long id;
-		
+
 	private String modifiedBy;
-	
+
 	private String assignedTo;
 
 	private String AssignedToEmployee;
+
+	private String email;
 
 }
