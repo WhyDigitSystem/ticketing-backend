@@ -39,9 +39,27 @@ public class CommentsVO {
 	@Column(name = "commentname")
 	private String commentName;
 	@Column(name = "commenttime")
-	private LocalDateTime commentsTime= LocalDateTime.now();
+	private LocalDateTime commentsTime = LocalDateTime.now();
 	@Column(name = "ticketid")
 	private Long ticketId;
+	
+	@Column(name = "orgid")
+	private Long orgId;
+
+	@Column(name = "sourceusername")
+	private String sourceUserName;
+
+	@Column(name = "sourceid")
+	private Long sourceId;
+
+	@Column(name = "application")
+	private String application;
+
+	@Column(name = "sourceorgid")
+	private Long sourceOrgId;
+
+	@Column(name = "sourceticketid")
+	private Long sourceTicketId;
 
 //	@ManyToOne
 //	@JsonBackReference
@@ -50,11 +68,9 @@ public class CommentsVO {
 
 	@Embedded
 	private CreatedUpdatedDate commondate = new CreatedUpdatedDate();
-	
+
 	@OneToMany(mappedBy = "commentsVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-    private List<TicketCommentImageVO> ticketCommentImageVO;
-	
-	
+	private List<TicketCommentImageVO> ticketCommentImageVO;
 
 }

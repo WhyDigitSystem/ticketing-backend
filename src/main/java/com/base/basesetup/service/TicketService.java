@@ -48,7 +48,7 @@ public interface TicketService {
 
 	CommentsVO getCommentsById(Long id);
 
-	CommentsVO creatComments(CommentDTO commentDTO);
+//	CommentsVO creatComments(CommentDTO commentDTO);
 
 	CommentsVO updateComments(CommentDTO commentDTO);
 
@@ -69,6 +69,8 @@ public interface TicketService {
 	List<Map<String, Object>> getTicketPriorityStatusCount();
 
 	TicketVO uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException;
+
+	Map<String, Object> createComments(CommentDTO commentDTO);
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 

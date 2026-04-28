@@ -8,10 +8,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDTO {
-	
-	private Long id;
-    private String comment;
-    private String commentName;
-    private Long ticketId;
 
+	private Long id;
+	private String comment;
+	private String commentName;
+	private Long ticketId;
+	private String sourceUserName;
+	private String application;
+	private Long sourceId;
+	private Long sourceOrgId;
+	private Long sourceTicketId;
 }

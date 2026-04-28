@@ -126,40 +126,38 @@ public class TicketController extends BaseController {
 	@PutMapping("/assignTicket")
 	public ResponseEntity<ResponseDTO> assignTicket(@RequestBody AssignTicketDTO assignTicketDTO) {
 
-	    String methodName = "assignTicket()";
-	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String methodName = "assignTicket()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 
-	    String errorMsg = null;
-	    Map<String, Object> responseObjectsMap = new HashMap<>();
-	    ResponseDTO responseDTO = null;
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
 
-	    try {
-	        // ✅ FIX: receive Map instead of TicketVO
-	        Map<String, Object> serviceResponse = ticketService.assignTicket(assignTicketDTO);
+		try {
+			// ✅ FIX: receive Map instead of TicketVO
+			Map<String, Object> serviceResponse = ticketService.assignTicket(assignTicketDTO);
 
-	        if (serviceResponse != null) {
+			if (serviceResponse != null) {
 
-	            responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-	                    serviceResponse.get("message"));
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, serviceResponse.get("message"));
 
-	            responseObjectsMap.put("ticketAssign",
-	                    serviceResponse.get("ticket"));
+				responseObjectsMap.put("ticketAssign", serviceResponse.get("ticket"));
 
-	            responseDTO = createServiceResponse(responseObjectsMap);
+				responseDTO = createServiceResponse(responseObjectsMap);
 
-	        } else {
-	            errorMsg = "Ticket not found for ID: " + assignTicketDTO.getId();
-	            responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-	        }
+			} else {
+				errorMsg = "Ticket not found for ID: " + assignTicketDTO.getId();
+				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+			}
 
-	    } catch (Exception e) {
-	        errorMsg = e.getMessage();
-	        LOGGER.error("Ticket Assign Failed: {}", errorMsg, e);
-	        responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-	    }
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Ticket Assign Failed: {}", errorMsg, e);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
 
-	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-	    return ResponseEntity.ok(responseDTO);
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok(responseDTO);
 	}
 
 	@PutMapping("/ChangeTicketStatus")
@@ -372,9 +370,30 @@ public class TicketController extends BaseController {
 		return ticketService.updateComments(commentsVO);
 	}
 
+//	@PostMapping("/createComments")
+//	public CommentsVO createComment(@RequestBody CommentDTO commentsVO) {
+//		return ticketService.creatComments(commentsVO);
+//	}
+
 	@PostMapping("/createComments")
-	public CommentsVO createComment(@RequestBody CommentDTO commentsVO) {
-		return ticketService.creatComments(commentsVO);
+	public ResponseEntity<ResponseDTO> createComments(@RequestBody CommentDTO commentDTO) {
+		String methodName = "createComments()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			Map<String, Object> commentVO = ticketService.createComments(commentDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, commentVO.get("message"));
+			responseObjectsMap.put("commentVO", commentVO.get("commentVO"));
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
 
 	@GetMapping("/getCommentsById/{id}")
@@ -491,7 +510,7 @@ public class TicketController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> ticketVO = new ArrayList<>();
+		List<Map<String, Object>> ticketVO = new ArrayList<>();
 		try {
 			ticketVO = ticketService.getTicketStatusCount();
 		} catch (Exception e) {
@@ -509,8 +528,7 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	
+
 	@GetMapping("/getTicketPriorityStatusCount")
 	public ResponseEntity<ResponseDTO> getTicketPriorityStatusCount() {
 		String methodName = "getTicketPriorityStatusCount()";
@@ -518,7 +536,7 @@ public class TicketController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> ticketVO = new ArrayList<>();
+		List<Map<String, Object>> ticketVO = new ArrayList<>();
 		try {
 			ticketVO = ticketService.getTicketPriorityStatusCount();
 		} catch (Exception e) {
@@ -536,7 +554,7 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PostMapping("/uploadTicketBySourceId")
 	public ResponseEntity<ResponseDTO> uploadTicketBySourceId(@RequestParam("file") MultipartFile file,
 			@RequestParam Long sourceId) {
@@ -562,6 +580,5 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-
 
 }

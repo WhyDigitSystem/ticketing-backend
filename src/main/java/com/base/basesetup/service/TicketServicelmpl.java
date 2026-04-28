@@ -5,8 +5,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +19,16 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangeTicketStatusDTO;
@@ -57,6 +61,15 @@ public class TicketServicelmpl implements TicketService {
 
 	@Value("${app.mail.adminEmail}")
 	private String adminEmail;
+
+	@Autowired
+	private AsyncEmailService asyncEmailService;
+
+	@Autowired
+	RestTemplate restTemplate;
+
+	@Autowired
+	CommentSyncService commentSyncService;
 
 	@Override
 	public TicketVO createTicket(CreateTicketDTO createTicketDTO) {
@@ -129,6 +142,72 @@ public class TicketServicelmpl implements TicketService {
 //	@Value("${app.mail.adminEmail}")
 //	private String adminEmail;
 
+//	@Override
+//	public Map<String, Object> assignTicket(AssignTicketDTO dto) {
+//
+//		TicketVO ticket = ticketRepo.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Ticket not found"));
+//
+//		// Update ticket
+//		ticket.setStatus("Inprogress");
+//		ticket.setAssignedTo(dto.getAssignedTo());
+//		ticket.setAssignedToEmp(dto.getAssignedToEmployee());
+//		ticket.setAssignedDate(LocalDate.now());
+//		ticket.setModifiedBy(dto.getModifiedBy());
+//		ticket.setEmail(dto.getEmail());
+//
+//		TicketVO savedTicket = ticketRepo.save(ticket);
+//
+//		boolean mailSent = false;
+//		String message;
+//
+//		try {
+//			String subject = "🎫 Ticket Assigned - ID: " + savedTicket.getId();
+//
+//			String createdOn = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format(new Date());
+//
+//			String htmlContent = loadHtmlTemplate(savedTicket.getId(), subject, savedTicket.getStatus(),
+//					savedTicket.getDescription(), savedTicket.getCreatedBy(), savedTicket.getEmail(), createdOn);
+//
+//			// Send email
+//			emailService.sendHtmlEmail(noReplayEmail, savedTicket.getEmail(), subject, htmlContent);
+//
+//			mailSent = true;
+//
+//		} catch (Exception e) {
+//			System.err.println("❌ Mail sending failed: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//
+//		message = mailSent ? "Ticket assigned successfully and mail sent."
+//				: "Ticket assigned successfully but mail failed.";
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("message", message);
+//		response.put("ticket", savedTicket);
+//
+//		return response;
+//	}
+
+//	// Load HTML Template
+//	public String loadHtmlTemplate(Long ticketId, String subject, String status, String description, String createdBy,
+//			String email, String createdOn) {
+//
+//		try {
+//			ClassPathResource resource = new ClassPathResource("template/email_template.html");
+//
+//			String content = new String(resource.getInputStream().readAllBytes());
+//
+//			return content.replace("${ticketId}", ticketId.toString()).replace("${subject}", subject)
+//					.replace("${status}", status).replace("${description}", description)
+//					.replace("${raisedBy}", createdBy).replace("${raisedEmail}", email)
+//					.replace("${raisedOn}", createdOn);
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return "<p>Error loading email template</p>";
+//		}
+//	}
+
 	@Override
 	public Map<String, Object> assignTicket(AssignTicketDTO dto) {
 
@@ -144,7 +223,6 @@ public class TicketServicelmpl implements TicketService {
 
 		TicketVO savedTicket = ticketRepo.save(ticket);
 
-		boolean mailSent = false;
 		String message;
 
 		try {
@@ -155,18 +233,15 @@ public class TicketServicelmpl implements TicketService {
 			String htmlContent = loadHtmlTemplate(savedTicket.getId(), subject, savedTicket.getStatus(),
 					savedTicket.getDescription(), savedTicket.getCreatedBy(), savedTicket.getEmail(), createdOn);
 
-			// Send email
-			emailService.sendHtmlEmail(noReplayEmail, savedTicket.getEmail(), subject, htmlContent);
+			// ✅ ASYNC CALL (NON-BLOCKING)
+			asyncEmailService.sendTicketAssignedMail(noReplayEmail, savedTicket.getEmail(), subject, htmlContent);
 
-			mailSent = true;
+			message = "Ticket assigned successfully and mail triggered.";
 
 		} catch (Exception e) {
-			System.err.println("❌ Mail sending failed: " + e.getMessage());
-			e.printStackTrace();
+			System.err.println("❌ Error preparing mail: " + e.getMessage());
+			message = "Ticket assigned successfully but mail preparation failed.";
 		}
-
-		message = mailSent ? "Ticket assigned successfully and mail sent."
-				: "Ticket assigned successfully but mail failed.";
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("message", message);
@@ -175,7 +250,6 @@ public class TicketServicelmpl implements TicketService {
 		return response;
 	}
 
-	// Load HTML Template
 	public String loadHtmlTemplate(Long ticketId, String subject, String status, String description, String createdBy,
 			String email, String createdOn) {
 
@@ -222,14 +296,14 @@ public class TicketServicelmpl implements TicketService {
 		return commentsRepo.findById(id).orElse(null);
 	}
 
-	@Override
-	public CommentsVO creatComments(CommentDTO commentDTO) {
-		CommentsVO commentsVO = new CommentsVO();
-		commentsVO.setComment(commentDTO.getComment());
-		commentsVO.setCommentName(commentDTO.getCommentName());
-		commentsVO.setTicketId(commentDTO.getTicketId());
-		return commentsRepo.save(commentsVO);
-	}
+//	@Override
+//	public Map<String,Obj> creatComments(CommentDTO commentDTO) {
+//		CommentsVO commentsVO = new CommentsVO();
+//		commentsVO.setComment(commentDTO.getComment());
+//		commentsVO.setCommentName(commentDTO.getCommentName());
+//		commentsVO.setTicketId(commentDTO.getTicketId());
+//		return commentsRepo.save(commentsVO);
+//	}
 
 	@Override
 	public CommentsVO updateComments(CommentDTO commentDTO) {
@@ -286,12 +360,93 @@ public class TicketServicelmpl implements TicketService {
 //		
 //	}
 
+//	@Override
+//	public TicketVO changeTicketStatus(ChangeTicketStatusDTO dto) {
+//
+//		TicketVO ticket = ticketRepo.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Ticket not found"));
+//
+//		// ✅ Local Update
+//		ticket.setStatus(dto.getStatus());
+//		ticket.setTicketStatus(dto.getTicketStatus());
+//		ticket.setModifiedBy(dto.getEmpCode());
+//		ticket.setCompletedBy(dto.getEmpCode());
+//		ticket.setCompletedOn(new Date());
+//
+//		TicketVO savedTicket = ticketRepo.save(ticket);
+//
+//		// ✅ Call remote servers
+//		updateOtherServers(savedTicket);
+//
+//		// ✅ Send Email
+//		sendMail(savedTicket);
+//
+//		return savedTicket;
+//	}
+//
+//	private void updateOtherServers(TicketVO ticket) {
+//
+//		RestTemplate restTemplate = new RestTemplate();
+//
+//		List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/updateTicketFromRemote",
+//				"http://139.5.190.203:9001/api/ticketcontroller/updateTicketFromRemote",
+//				"http://localhost:8011/api/ticketcontroller/updateTicketFromRemote");
+//
+//		for (String url : urls) {
+//			try {
+//
+//				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+//						.queryParam("orgId", ticket.getSourceOrgId()).queryParam("id", ticket.getSourceId())
+//						.queryParam("email", ticket.getSourceEmail()).queryParam("status", ticket.getStatus())
+//						.queryParam("empCode", ticket.getModifiedBy())
+//						.queryParam("ticketStatus", ticket.getTicketStatus());
+//				restTemplate.put(builder.toUriString(), null);
+//
+//				System.out.println("✅ Updated in: " + url);
+//
+//			} catch (Exception e) {
+//				System.err.println("❌ Failed in: " + url + " error: " + e.getMessage());
+//			}
+//		}
+//	}
+//
+//
+//	private void sendMail(TicketVO ticket) {
+//
+//		String subject = ticket.getDescription() + " - Ticket Status Updated";
+//
+//		try {
+//			String html = loadHtmlTemplateUpdateMail(ticket.getId(), subject, ticket.getStatus(),
+//					ticket.getTicketStatus());
+//
+//			// ✅ Debug (important)
+//			System.out.println("From: " + noReplayEmail);
+//			System.out.println("User Email: " + ticket.getSourceEmail());
+//			System.out.println("Admin Email: " + adminEmail);
+//
+//			// ✅ Send to user
+//			if (ticket.getSourceEmail() != null && !ticket.getSourceEmail().isEmpty()) {
+//				emailService.sendHtmlEmail(noReplayEmail, ticket.getSourceEmail(), subject, html);
+//			}
+//
+//			// ✅ Send to admin (fix issue)
+//			if (adminEmail != null && !adminEmail.isEmpty()) {
+//				emailService.sendHtmlEmail(noReplayEmail, adminEmail, subject, html);
+//			} else {
+//				System.err.println("❌ Admin email is null");
+//			}
+//
+//		} catch (Exception e) {
+//			System.err.println("❌ Mail failed: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//	}
+
 	@Override
 	public TicketVO changeTicketStatus(ChangeTicketStatusDTO dto) {
 
 		TicketVO ticket = ticketRepo.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-		// ✅ Local Update
+		// ✅ Update
 		ticket.setStatus(dto.getStatus());
 		ticket.setTicketStatus(dto.getTicketStatus());
 		ticket.setModifiedBy(dto.getEmpCode());
@@ -300,87 +455,21 @@ public class TicketServicelmpl implements TicketService {
 
 		TicketVO savedTicket = ticketRepo.save(ticket);
 
-		// ✅ Call remote servers
-		updateOtherServers(savedTicket);
-
-		// ✅ Send Email
-		sendMail(savedTicket);
-
-		return savedTicket;
-	}
-
-	private void updateOtherServers(TicketVO ticket) {
-
-		RestTemplate restTemplate = new RestTemplate();
-
-		List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/updateTicketFromRemote",
-				"http://139.5.190.203:9001/api/ticketcontroller/updateTicketFromRemote",
-				"http://localhost:8011/api/ticketcontroller/updateTicketFromRemote");
-
-		for (String url : urls) {
-			try {
-
-				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-						.queryParam("orgId", ticket.getSourceOrgId()).queryParam("id", ticket.getSourceId())
-						.queryParam("email", ticket.getSourceEmail()).queryParam("status", ticket.getStatus())
-						.queryParam("empCode", ticket.getModifiedBy())
-						.queryParam("ticketStatus", ticket.getTicketStatus());
-				restTemplate.put(builder.toUriString(), null);
-
-				System.out.println("✅ Updated in: " + url);
-
-			} catch (Exception e) {
-				System.err.println("❌ Failed in: " + url + " error: " + e.getMessage());
-			}
-		}
-	}
-
-//	private void sendMail(TicketVO ticket) {
-//
-//		String subject = ticket.getDescription() + " - Ticket Status Updated";
-//
-//		try {
-//			String html = loadHtmlTemplateUpdateMail(ticket.getId(), subject, ticket.getStatus(),
-//					ticket.getDescription());
-//
-//			emailService.sendHtmlEmail(noReplayEmail, ticket.getSourceEmail(), subject, html);
-//
-//			emailService.sendHtmlEmail(noReplayEmail, adminEmail, subject, html);
-//
-//		} catch (Exception e) {
-//			System.err.println("❌ Mail failed: " + e.getMessage());
-//		}
-//	}
-
-	private void sendMail(TicketVO ticket) {
-
-		String subject = ticket.getDescription() + " - Ticket Status Updated";
-
 		try {
-			String html = loadHtmlTemplateUpdateMail(ticket.getId(), subject, ticket.getStatus(),
-					ticket.getTicketStatus());
+			String subject = savedTicket.getDescription() + " - Ticket Status Updated";
 
-			// ✅ Debug (important)
-			System.out.println("From: " + noReplayEmail);
-			System.out.println("User Email: " + ticket.getSourceEmail());
-			System.out.println("Admin Email: " + adminEmail);
+			String html = loadHtmlTemplateUpdateMail(savedTicket.getId(), subject, savedTicket.getStatus(),
+					savedTicket.getTicketStatus());
 
-			// ✅ Send to user
-			if (ticket.getSourceEmail() != null && !ticket.getSourceEmail().isEmpty()) {
-				emailService.sendHtmlEmail(noReplayEmail, ticket.getSourceEmail(), subject, html);
-			}
-
-			// ✅ Send to admin (fix issue)
-			if (adminEmail != null && !adminEmail.isEmpty()) {
-				emailService.sendHtmlEmail(noReplayEmail, adminEmail, subject, html);
-			} else {
-				System.err.println("❌ Admin email is null");
-			}
+			// ✅ ASYNC CALLS (NO WAIT)
+			asyncEmailService.updateOtherServersAsync(savedTicket);
+			asyncEmailService.sendStatusUpdateMail(savedTicket, noReplayEmail, adminEmail, html);
 
 		} catch (Exception e) {
-			System.err.println("❌ Mail failed: " + e.getMessage());
-			e.printStackTrace();
+			System.err.println("❌ Error preparing async tasks: " + e.getMessage());
 		}
+
+		return savedTicket; // ⚡ instant response
 	}
 
 	@Override
@@ -485,4 +574,45 @@ public class TicketServicelmpl implements TicketService {
 		}
 	}
 
+	@Override
+	public Map<String, Object> createComments(CommentDTO dto) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			System.out.println("📥 Incoming DTO SourceId: " + dto.getSourceId());
+
+			CommentsVO vo = new CommentsVO();
+
+			vo.setComment(dto.getComment());
+			vo.setCommentName(dto.getCommentName());
+			vo.setTicketId(dto.getTicketId());
+			vo.setSourceId(dto.getSourceId());
+			vo.setSourceUserName(dto.getSourceUserName());
+			vo.setSourceOrgId(dto.getSourceOrgId());
+
+			commentsRepo.save(vo);
+
+			System.out.println("💾 Saved in Server B: " + vo.getId());
+
+			// ✅ Only trigger when it's ORIGINAL request
+			if (dto.getSourceId() == null) {
+				System.out.println("🔁 Triggering B → A Sync...");
+				commentSyncService.sendToServerA(vo);
+			} else {
+				System.out.println("⛔ Skipping Sync (came from Server A)");
+			}
+
+			response.put("status", true);
+			response.put("message", "Saved in Server B");
+			response.put("commentVO", vo);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.put("status", false);
+			response.put("message", e.getMessage());
+		}
+
+		return response;
+	}
 }

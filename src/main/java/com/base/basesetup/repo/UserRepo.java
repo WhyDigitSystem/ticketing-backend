@@ -29,4 +29,6 @@ public interface UserRepo extends JpaRepository<UserVO, Long> {
 	@Query(value = "select u from UserVO u where u.type ='Customer'")
 	List<UserVO> findAllByType();
 
+	UserVO findByEmail(String oldEmail);
+
 }
