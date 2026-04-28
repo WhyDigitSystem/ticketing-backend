@@ -580,27 +580,29 @@ public class TicketServicelmpl implements TicketService {
 		Map<String, Object> response = new HashMap<>();
 
 		try {
-			System.out.println("📥 Incoming DTO SourceId: " + dto.getSourceId());
+			System.out.println("📥 B received SourceId: " + dto.getSourceId());
 
 			CommentsVO vo = new CommentsVO();
 
 			vo.setComment(dto.getComment());
 			vo.setCommentName(dto.getCommentName());
 			vo.setTicketId(dto.getTicketId());
+			vo.setOrgId(dto.getOrgId());
 			vo.setSourceId(dto.getSourceId());
+			vo.setSourceTicketId(dto.getSourceTicketId());
 			vo.setSourceUserName(dto.getSourceUserName());
 			vo.setSourceOrgId(dto.getSourceOrgId());
+			vo.setApplication(dto.getApplication());
 
 			commentsRepo.save(vo);
 
 			System.out.println("💾 Saved in Server B: " + vo.getId());
 
-			// ✅ Only trigger when it's ORIGINAL request
-			if (dto.getSourceId() == null) {
-				System.out.println("🔁 Triggering B → A Sync...");
+			if (dto.getSourceId() == null || dto.getSourceId() == 0) {
+				System.out.println("🔁 B → A Triggered");
 				commentSyncService.sendToServerA(vo);
 			} else {
-				System.out.println("⛔ Skipping Sync (came from Server A)");
+				System.out.println("⛔ Skipping B → A (came from A)");
 			}
 
 			response.put("status", true);
@@ -614,5 +616,11 @@ public class TicketServicelmpl implements TicketService {
 		}
 
 		return response;
+	}
+
+	@Override
+	public List<CommentsVO> getAllCommentsList(Long ticketId) {
+		return commentsRepo.getAllCommentsList(ticketId);
+
 	}
 }

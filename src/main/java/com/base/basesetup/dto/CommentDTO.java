@@ -18,4 +18,5 @@ public class CommentDTO {
 	private Long sourceId;
 	private Long sourceOrgId;
 	private Long sourceTicketId;
+	private Long orgId;
 }

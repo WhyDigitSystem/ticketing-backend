@@ -581,4 +581,30 @@ public class TicketController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getAllCommentsList")
+	public ResponseEntity<ResponseDTO> getAllCommentsList(@RequestParam Long ticketId) {
+		String methodName = "getAllCommentsList()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<CommentsVO> commentsVO = new ArrayList<CommentsVO>();
+		try {
+			commentsVO = ticketService.getAllCommentsList(ticketId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "comments information get successfully By TicketId");
+			responseObjectsMap.put("commentsVO", commentsVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "comments information receive failed By orgId",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 }

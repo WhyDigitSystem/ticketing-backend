@@ -10,5 +10,8 @@ import com.base.basesetup.entity.CommentsVO;
 public interface CommentsRepo extends JpaRepository<CommentsVO, Long> {
 	@Query(nativeQuery = true, value = "select * from comments where ticketid=?1 order by createdon asc")
 	List<CommentsVO> findCommentsByTicketId(Long ticketId);
+	
+	@Query(nativeQuery = true, value = "select * from comments where ticketid=?1")
+	List<CommentsVO> getAllCommentsList(Long ticketId);
 
 }

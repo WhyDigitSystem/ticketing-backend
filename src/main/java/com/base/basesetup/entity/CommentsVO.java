@@ -7,7 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,9 +29,9 @@ import lombok.NoArgsConstructor;
 public class CommentsVO {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "commentgen")
-	@SequenceGenerator(name = "commentgen", sequenceName = "commentseq", initialValue = 1, allocationSize = 1)
-	@Column(name = "commentid")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "commentsgen")
+	@SequenceGenerator(name = "commentsgen", sequenceName = "commentsseq", initialValue = 1000000001, allocationSize = 1)
+	@Column(name = "commentsid")
 	private Long id;
 	@Column(name = "comment")
 	private String comment;
@@ -42,7 +41,7 @@ public class CommentsVO {
 	private LocalDateTime commentsTime = LocalDateTime.now();
 	@Column(name = "ticketid")
 	private Long ticketId;
-	
+
 	@Column(name = "orgid")
 	private Long orgId;
 

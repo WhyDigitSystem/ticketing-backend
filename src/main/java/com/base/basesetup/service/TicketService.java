@@ -72,6 +72,8 @@ public interface TicketService {
 
 	Map<String, Object> createComments(CommentDTO commentDTO);
 
+	List<CommentsVO> getAllCommentsList(Long ticketId);
+
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 
 }
