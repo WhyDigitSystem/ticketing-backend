@@ -36,7 +36,8 @@ public class CommentSyncService {
 	        body.put("sourceOrgId", vo.getOrgId());
 	        body.put("ticketId", vo.getTicketId());
 
-	        String url = "http://localhost:8021/api/ticketcontroller/createComments";
+//	        String url = "http://localhost:8021/api/ticketcontroller/createComments";
+	        String url = "http://139.5.190.203:8021/api/ticketcontroller/createComments";
 
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.setContentType(MediaType.APPLICATION_JSON);

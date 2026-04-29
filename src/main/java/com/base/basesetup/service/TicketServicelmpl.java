@@ -619,8 +619,14 @@ public class TicketServicelmpl implements TicketService {
 	}
 
 	@Override
-	public List<CommentsVO> getAllCommentsList(Long ticketId) {
-		return commentsRepo.getAllCommentsList(ticketId);
+	public List<CommentsVO> getAllCommentsAnotherServer(Long ticketId) {
+		return commentsRepo.getAllCommentsAnotherServer(ticketId);
+
+	}
+
+	@Override
+	public List<CommentsVO> getAllCommentsMyServer(Long ticketId) {
+		return commentsRepo.getAllCommentsMyServer(ticketId);
 
 	}
 }

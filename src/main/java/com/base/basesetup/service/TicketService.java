@@ -72,7 +72,9 @@ public interface TicketService {
 
 	Map<String, Object> createComments(CommentDTO commentDTO);
 
-	List<CommentsVO> getAllCommentsList(Long ticketId);
+	List<CommentsVO> getAllCommentsAnotherServer(Long ticketId);
+
+	List<CommentsVO> getAllCommentsMyServer(Long ticketId);
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 
