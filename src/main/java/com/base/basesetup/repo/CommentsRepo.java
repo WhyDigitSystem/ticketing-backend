@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,11 +11,15 @@ import com.base.basesetup.entity.CommentsVO;
 public interface CommentsRepo extends JpaRepository<CommentsVO, Long> {
 	@Query(nativeQuery = true, value = "select * from comments where ticketid=?1 order by createdon asc")
 	List<CommentsVO> findCommentsByTicketId(Long ticketId);
-	
+
 	@Query(nativeQuery = true, value = "select * from comments where ticketid=?1 and orgid is null")
 	List<CommentsVO> getAllCommentsAnotherServer(Long ticketId);
-	
+
 	@Query(nativeQuery = true, value = "select * from comments where ticketid=?1 and orgid is not  null")
 	List<CommentsVO> getAllCommentsMyServer(Long ticketId);
+
+	@Query(nativeQuery = true, value = "select * from comments where sourceid=?1")
+	Optional<CommentsVO> findBySourceId(Long sourceId);
+
 
 }

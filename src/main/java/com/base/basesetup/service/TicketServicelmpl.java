@@ -305,18 +305,18 @@ public class TicketServicelmpl implements TicketService {
 //		return commentsRepo.save(commentsVO);
 //	}
 
-	@Override
-	public CommentsVO updateComments(CommentDTO commentDTO) {
-		if (commentsRepo.existsById(commentDTO.getId())) {
-			CommentsVO commentsVO = commentsRepo.findById(commentDTO.getId()).get();
-			commentsVO.setComment(commentDTO.getComment());
-			commentsVO.setCommentName(commentDTO.getCommentName());
-			commentsVO.setTicketId(commentDTO.getTicketId());
-			return commentsRepo.save(commentsVO);
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + commentDTO.getId());
-		}
-	}
+//	@Override
+//	public CommentsVO updateComments(CommentDTO commentDTO) {
+//		if (commentsRepo.existsById(commentDTO.getId())) {
+//			CommentsVO commentsVO = commentsRepo.findById(commentDTO.getId()).get();
+//			commentsVO.setComment(commentDTO.getComment());
+//			commentsVO.setCommentName(commentDTO.getCommentName());
+//			commentsVO.setTicketId(commentDTO.getTicketId());
+//			return commentsRepo.save(commentsVO);
+//		} else {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + commentDTO.getId());
+//		}
+//	}
 
 	@Override
 	public ResponseEntity<?> deleteComments(Long id) {
@@ -628,5 +628,49 @@ public class TicketServicelmpl implements TicketService {
 	public List<CommentsVO> getAllCommentsMyServer(Long ticketId) {
 		return commentsRepo.getAllCommentsMyServer(ticketId);
 
+	}
+
+	@Override
+	public CommentsVO updateComments(CommentDTO dto) {
+
+		CommentsVO vo;
+
+		// ✅ 1. FIRST PRIORITY → LOCAL UPDATE USING ID
+		if (dto.getId() != null) {
+
+			vo = commentsRepo.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Not found in B by id"));
+
+			System.out.println("✏️ Updating in B using commentsid");
+
+			vo.setComment(dto.getComment());
+			vo.setCommentName(dto.getCommentName());
+			vo.setTicketId(dto.getTicketId());
+
+			commentsRepo.save(vo);
+
+			// ✅ SEND BACK TO A (ONLY LOCAL UPDATE)
+			commentSyncService.updateToServerA(vo);
+		}
+
+		// ✅ 2. SECOND → SYNC UPDATE USING sourceId
+		else if (dto.getSourceId() != null) {
+
+			vo = commentsRepo.findBySourceId(dto.getSourceId())
+					.orElseThrow(() -> new RuntimeException("Not found in B by sourceId"));
+
+			System.out.println("✏️ Updating in B using sourceId");
+
+			vo.setComment(dto.getComment());
+			vo.setCommentName(dto.getCommentName());
+			vo.setTicketId(dto.getTicketId());
+
+			commentsRepo.save(vo);
+		}
+
+		else {
+			throw new RuntimeException("❌ id and sourceId both NULL");
+		}
+
+		return vo;
 	}
 }

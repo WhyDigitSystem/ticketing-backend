@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -23,38 +24,72 @@ public class CommentSyncService {
 	@Async("taskExecutor")
 	public void sendToServerA(CommentsVO vo) {
 
-	    try {
-	        System.out.println("🚀 Sending B → A for ID: " + vo.getId());
+		try {
+			System.out.println("🚀 Sending B → A for ID: " + vo.getId());
 
-	        Map<String, Object> body = new HashMap<>();
+			Map<String, Object> body = new HashMap<>();
 
-	        body.put("comments", vo.getComment());
+			body.put("comments", vo.getComment());
 //	        body.put("userName", vo.getCommentName());
-	        body.put("sourceTicketId", vo.getTicketId());
-	        body.put("sourceId", vo.getId());
-	        body.put("sourceUserName", vo.getCommentName());
-	        body.put("sourceOrgId", vo.getOrgId());
-	        body.put("ticketId", vo.getTicketId());
+			body.put("sourceTicketId", vo.getTicketId());
+			body.put("sourceId", vo.getId());
+			body.put("sourceUserName", vo.getCommentName());
+			body.put("sourceOrgId", vo.getOrgId());
+			body.put("ticketId", vo.getTicketId());
 
 //	        String url = "http://localhost:8021/api/ticketcontroller/createComments";
-	        String url = "http://139.5.190.203:8021/api/ticketcontroller/createComments";
+			String url = "http://139.5.190.203:8021/api/ticketcontroller/createComments";
 
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 
-	        HttpEntity<Map<String, Object>> request =
-	                new HttpEntity<>(body, headers);
+			HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-	        System.out.println("➡️ B → A Payload: " + body);
+			System.out.println("➡️ B → A Payload: " + body);
 
-	        ResponseEntity<String> response =
-	                restTemplate.postForEntity(url, request, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-	        System.out.println("✅ B → A Response: " + response.getBody());
+			System.out.println("✅ B → A Response: " + response.getBody());
 
-	    } catch (Exception e) {
-	        System.out.println("❌ ERROR B → A");
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			System.out.println("❌ ERROR B → A");
+			e.printStackTrace();
+		}
+	}
+
+	@Async("taskExecutor")
+	public void updateToServerA(CommentsVO vo) {
+
+		try {
+			Map<String, Object> body = new HashMap<>();
+
+			body.put("comments", vo.getComment());
+			body.put("userName", vo.getCommentName());
+			body.put("ticketId", vo.getTicketId());
+
+			// 🔥 IMPORTANT LINK
+			body.put("sourceId", vo.getId());
+
+			body.put("sourceUserName", vo.getSourceUserName());
+			body.put("orgId", vo.getSourceOrgId());
+
+//			String url = "http://localhost:8021/api/ticketcontroller/updateComments";
+			
+			String url = "http://139.5.190.203:8021/api/ticketcontroller/updateComments";
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+			System.out.println("📤 B → A Payload: " + body);
+
+			restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+
+			System.out.println("✅ B → A updated");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

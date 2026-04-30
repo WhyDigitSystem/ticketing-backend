@@ -366,8 +366,8 @@ public class TicketController extends BaseController {
 	}
 
 	@PutMapping("/updateComments")
-	public CommentsVO updateComment(@RequestBody CommentDTO commentsVO) {
-		return ticketService.updateComments(commentsVO);
+	public CommentsVO updateComment(@RequestBody CommentDTO dto) {
+		return ticketService.updateComments(dto);
 	}
 
 //	@PostMapping("/createComments")
