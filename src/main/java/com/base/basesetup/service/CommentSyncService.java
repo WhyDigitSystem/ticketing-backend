@@ -121,39 +121,92 @@ public class CommentSyncService {
 
 //			String url = "http://localhost:8021/api/ticketcontroller/updateComments";
 
-			String url = "http://139.5.190.203:8021/api/ticketcontroller/updateComments";
+//			String url = "http://139.5.190.203:8021/api/ticketcontroller/updateComments";
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
 			HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-			System.out.println("📤 B → A Payload: " + body);
+			List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/updateComments",
+					"http://139.5.190.73:8033/api/ticketcontroller/updateComments");
 
-			restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+			for (String url : urls) {
+				try {
+					System.out.println("➡️ UPDATE to: " + url);
+					System.out.println("📦 Payload: " + body);
 
-			System.out.println("✅ B → A updated");
+					restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+
+					System.out.println("✅ Updated: " + url);
+
+				} catch (Exception e) {
+					System.err.println("❌ Update Failed: " + url + " | " + e.getMessage());
+				}
+			}
 
 		} catch (Exception e) {
+			System.out.println("❌ UPDATE Sync Error");
 			e.printStackTrace();
 		}
 	}
 
+//	@Async("taskExecutor")
+//	public void deleteInServerA(Long sourceId) {
+//
+//		try {
+//
+//			String url = "http://139.5.190.203:8021/api/ticketcontroller/deleteComments?sourceId=" + sourceId;
+//
+//			System.out.println("📤 B → A DELETE URL: " + url);
+//
+//			restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
+//
+//			System.out.println("✅ B → A delete synced");
+//
+//		} catch (Exception e) {
+//			System.err.println("❌ Error calling A");
+//			e.printStackTrace();
+//		}
+//	}
+
 	@Async("taskExecutor")
-	public void deleteInServerA(Long sourceId) {
+	public void deleteCommentsInMultipleServers(Long sourceId) {
 
 		try {
+			System.out.println("🚀 DELETE Sync Start SourceId: " + sourceId);
 
-			String url = "http://139.5.190.203:8021/api/ticketcontroller/deleteComments?sourceId=" + sourceId;
+			RestTemplate restTemplate = new RestTemplate();
 
-			System.out.println("📤 B → A DELETE URL: " + url);
+			// ✅ ONLY sourceId (as per your requirement)
+			Map<String, Object> body = new HashMap<>();
+			body.put("sourceId", sourceId);
 
-			restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 
-			System.out.println("✅ B → A delete synced");
+			HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+			// ✅ MULTIPLE SERVERS
+			List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/deleteComments",
+					"http://139.5.190.73:8033/api/ticketcontroller/deleteComments");
+
+			for (String url : urls) {
+				try {
+					System.out.println("➡️ DELETE to: " + url);
+					System.out.println("📦 Payload: " + body);
+
+					restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
+
+					System.out.println("✅ Deleted in: " + url);
+
+				} catch (Exception e) {
+					System.err.println("❌ Delete Failed: " + url + " | " + e.getMessage());
+				}
+			}
 
 		} catch (Exception e) {
-			System.err.println("❌ Error calling A");
+			System.out.println("❌ DELETE Sync Error");
 			e.printStackTrace();
 		}
 	}

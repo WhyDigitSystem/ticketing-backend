@@ -674,30 +674,29 @@ public class TicketServicelmpl implements TicketService {
 	@Override
 	public void deleteComments(Long id, Long sourceId) {
 
-	    if (id != null) {
+		if (id != null) {
 
-	        CommentsVO vo = commentsRepo.findById(id)
-	                .orElseThrow(() -> new RuntimeException("Not found in B"));
+			CommentsVO vo = commentsRepo.findById(id).orElseThrow(() -> new RuntimeException("Not found in B"));
 
-	        commentsRepo.delete(vo);
+			commentsRepo.delete(vo);
 
-	        System.out.println("🗑️ Deleted in Server B (LOCAL)");
+			System.out.println("🗑️ Deleted in Server B (LOCAL)");
 
-	        commentSyncService.deleteInServerA(vo.getId());
-	    }
+			commentSyncService.deleteCommentsInMultipleServers(vo.getId());
+		}
 
-	    else if (sourceId != null) {
+		else if (sourceId != null) {
 
-	        CommentsVO vo = commentsRepo.findBySourceId(sourceId)
-	                .orElseThrow(() -> new RuntimeException("Not found in B by sourceId"));
+			CommentsVO vo = commentsRepo.findBySourceId(sourceId)
+					.orElseThrow(() -> new RuntimeException("Not found in B by sourceId"));
 
-	        commentsRepo.delete(vo);
+			commentsRepo.delete(vo);
 
-	        System.out.println("🗑️ Deleted in Server B (SYNC)");
-	    }
+			System.out.println("🗑️ Deleted in Server B (SYNC)");
+		}
 
-	    else {
-	        throw new RuntimeException("❌ id and sourceId both NULL");
-	    }
+		else {
+			throw new RuntimeException("❌ id and sourceId both NULL");
+		}
 	}
 }
