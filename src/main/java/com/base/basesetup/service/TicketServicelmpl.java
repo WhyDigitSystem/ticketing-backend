@@ -600,7 +600,7 @@ public class TicketServicelmpl implements TicketService {
 
 			if (dto.getSourceId() == null || dto.getSourceId() == 0) {
 				System.out.println("🔁 B → A Triggered");
-				commentSyncService.sendToServerA(vo);
+				commentSyncService.sendCommentsToMultipleServers(vo);
 			} else {
 				System.out.println("⛔ Skipping B → A (came from A)");
 			}
@@ -635,7 +635,6 @@ public class TicketServicelmpl implements TicketService {
 
 		CommentsVO vo;
 
-		// ✅ 1. FIRST PRIORITY → LOCAL UPDATE USING ID
 		if (dto.getId() != null) {
 
 			vo = commentsRepo.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Not found in B by id"));
@@ -648,11 +647,9 @@ public class TicketServicelmpl implements TicketService {
 
 			commentsRepo.save(vo);
 
-			// ✅ SEND BACK TO A (ONLY LOCAL UPDATE)
 			commentSyncService.updateToServerA(vo);
 		}
 
-		// ✅ 2. SECOND → SYNC UPDATE USING sourceId
 		else if (dto.getSourceId() != null) {
 
 			vo = commentsRepo.findBySourceId(dto.getSourceId())
@@ -672,5 +669,35 @@ public class TicketServicelmpl implements TicketService {
 		}
 
 		return vo;
+	}
+
+	@Override
+	public void deleteComments(Long id, Long sourceId) {
+
+	    if (id != null) {
+
+	        CommentsVO vo = commentsRepo.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Not found in B"));
+
+	        commentsRepo.delete(vo);
+
+	        System.out.println("🗑️ Deleted in Server B (LOCAL)");
+
+	        commentSyncService.deleteInServerA(vo.getId());
+	    }
+
+	    else if (sourceId != null) {
+
+	        CommentsVO vo = commentsRepo.findBySourceId(sourceId)
+	                .orElseThrow(() -> new RuntimeException("Not found in B by sourceId"));
+
+	        commentsRepo.delete(vo);
+
+	        System.out.println("🗑️ Deleted in Server B (SYNC)");
+	    }
+
+	    else {
+	        throw new RuntimeException("❌ id and sourceId both NULL");
+	    }
 	}
 }

@@ -76,6 +76,8 @@ public interface TicketService {
 
 	List<CommentsVO> getAllCommentsMyServer(Long ticketId);
 
+	void deleteComments(Long id, Long sourceId);
+
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 
 }

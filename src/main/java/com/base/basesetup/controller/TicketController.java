@@ -359,21 +359,10 @@ public class TicketController extends BaseController {
 		return getTicketDetails;
 	}
 
-	// Comments
-	@DeleteMapping("/deleteCommentsById/{id}")
-	public ResponseEntity<?> deleteComment(@PathVariable Long id) {
-		return ticketService.deleteComments(id);
-	}
-
 	@PutMapping("/updateComments")
 	public CommentsVO updateComment(@RequestBody CommentDTO dto) {
 		return ticketService.updateComments(dto);
 	}
-
-//	@PostMapping("/createComments")
-//	public CommentsVO createComment(@RequestBody CommentDTO commentsVO) {
-//		return ticketService.creatComments(commentsVO);
-//	}
 
 	@PostMapping("/createComments")
 	public ResponseEntity<ResponseDTO> createComments(@RequestBody CommentDTO commentDTO) {
@@ -631,6 +620,37 @@ public class TicketController extends BaseController {
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@DeleteMapping("/deleteComments")
+	public ResponseEntity<ResponseDTO> deleteComments(@RequestParam(required = false) Long id,
+			@RequestParam(required = false) Long sourceId) {
+
+		String methodName = "deleteComments()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+
+		try {
+			ticketService.deleteComments(id, sourceId);
+
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Comment deleted successfully in Server B");
+
+			responseDTO = createServiceResponse(responseObjectsMap);
+
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Comment delete failed in Server B", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok(responseDTO);
 	}
 
 }
