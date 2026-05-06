@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Support Ticket Notification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, Helvetica, sans-serif;">
+
+    <!-- Wrapper -->
+    <table align="center" width="100%" style="padding:20px 0;">
+        <tr>
+            <td align="center">
+
+                <!-- Main Card -->
+                <table width="600" style="background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 3px 10px rgba(0,0,0,0.1);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background:#047857; padding:20px;">
+                            <h2 style="color:#ffffff; margin:0;">🎫 Support Ticket Notification</h2>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding:30px;">
+
+                            <h3 style="color:#1e293b;">${subject}</h3>
+
+                            <p><strong>Ticket ID:</strong> 
+                                <span style="color:#059669;">${ticketId}</span>
+                            </p>
+
+                            <p><strong>Raised By:</strong> 
+                                <span style="color:#059669;">${raisedBy}</span>
+                            </p>
+
+                            <p><strong>Raised Email:</strong> 
+                                <span style="color:#059669;">${raisedEmail}</span>
+                            </p>
+
+                            <p><strong>Raised On:</strong> 
+                                <span style="color:#059669;">${raisedOn}</span>
+                            </p>
+
+                            <p><strong>Status:</strong> 
+                                <span style="color:#2563eb;">${status}</span>
+                            </p>
+
+                            <!-- Description -->
+                            <h4>Description:</h4>
+                            <div style="background:#f0fdf4; border-left:4px solid #10b981; padding:15px; border-radius:6px;">
+                                ${description}
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background:#f8fafc; text-align:center; padding:20px; font-size:13px; color:#64748b;">
+                            <p>© 2025 WHY DIGIT SYSTEM PVT LTD. All rights reserved.</p>
+                            <p>This is an automated message — please do not reply.</p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

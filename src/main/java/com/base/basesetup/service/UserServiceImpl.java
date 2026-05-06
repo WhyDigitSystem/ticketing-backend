@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +17,11 @@ import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ChangePasswordFormDTO;
 import com.base.basesetup.dto.LoginFormDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
-import com.base.basesetup.dto.Role;
 import com.base.basesetup.dto.SignUpFormDTO;
+import com.base.basesetup.dto.UserCountDTO;
 import com.base.basesetup.entity.UserActionVO;
 import com.base.basesetup.entity.UserVO;
+import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.UserActionRepo;
 import com.base.basesetup.repo.UserRepo;
 import com.base.basesetup.util.CryptoUtils;
@@ -56,17 +58,17 @@ public class UserServiceImpl implements UserService {
 	private UserVO getUserVOFromSignUpFormDTO(SignUpFormDTO signUpRequest) {
 		UserVO userVO = new UserVO();
 		userVO.setFirstName(signUpRequest.getFirstName());
-		userVO.setLastName(signUpRequest.getLastName());
+		userVO.setType(signUpRequest.getType());
+		userVO.setActive(true);
 		userVO.setUserName(signUpRequest.getUserName());
 		userVO.setEmail(signUpRequest.getEmail());
+		userVO.setCompany(signUpRequest.getCompany());
 		try {
 			userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(signUpRequest.getPassword())));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
 		}
-		userVO.setRole(Role.ROLE_USER);
-		userVO.setActive(true);
 		return userVO;
 	}
 
@@ -80,15 +82,22 @@ public class UserServiceImpl implements UserService {
 		}
 		UserVO userVO = userRepo.findByUserName(loginRequest.getUserName());
 		if (ObjectUtils.isNotEmpty(userVO)) {
-			if (compareEncodedPasswordWithEncryptedPassword(loginRequest.getPassword(), userVO.getPassword())) {
+			if(userVO.isActive())
+			{
+				if (compareEncodedPasswordWithEncryptedPassword(loginRequest.getPassword(), userVO.getPassword())) {
 				updateUserLoginInformation(userVO);
-			} else {
-				throw new ApplicationContextException(UserConstants.ERRROR_MSG_PASSWORD_MISMATCH);
+				} else {
+					throw new ApplicationContextException(UserConstants.ERRROR_MSG_PASSWORD_MISMATCH);
+				}
+			}
+			else
+			{
+				throw new ApplicationContextException(UserConstants.ACCOUNT_INACTIVE_MESSAGE);
 			}
 		} else {
 			throw new ApplicationContextException(
 					UserConstants.ERRROR_MSG_USER_INFORMATION_NOT_FOUND_AND_ASKING_SIGNUP);
-		}
+		} 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return userVO;
 	}
@@ -263,4 +272,40 @@ public class UserServiceImpl implements UserService {
 			throw new ApplicationContextException(UserConstants.ERRROR_MSG_INVALID_USER_NAME);
 		}
 	}
+
+		@Override
+		public UserCountDTO getEmployeeAndCustomerCount() {
+			 List<Object[]> results = userRepo.findEmployeeAndCustomerCount();
+		        Object[] result = results.get(0);
+		        Long totalCustomer = ((Number) result[0]).longValue();
+		        Long totalEmployee = ((Number) result[1]).longValue();
+		        return new UserCountDTO(totalCustomer, totalEmployee);
+		    }
+
+		@Override
+		public List<UserVO> getAllCustomer() {
+			return userRepo.findAllByType();
+		}
+
+		@Override
+		public UserVO updateCustomer(SignUpFormDTO signUpRequest,Long userId) throws ApplicationException {
+		
+			
+			UserVO userVO = userRepo.findById(userId).get();
+			if(userVO!=null)
+			{
+			userVO.setFirstName(signUpRequest.getFirstName());
+			userVO.setType(signUpRequest.getType());
+			userVO.setActive(signUpRequest.isActive());
+			userVO.setUserName(signUpRequest.getUserName());
+			userVO.setEmail(signUpRequest.getEmail());
+			userVO.setCompany(signUpRequest.getCompany());
+			}
+			else
+			{
+				throw new ApplicationException("User information not found for this id"+userId);
+			}
+			return userRepo.save(userVO);
+			
+		}
 }

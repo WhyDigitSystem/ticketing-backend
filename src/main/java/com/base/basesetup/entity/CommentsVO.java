@@ -1,0 +1,75 @@
+package com.base.basesetup.entity;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import com.base.basesetup.dto.CreatedUpdatedDate;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "comments")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CommentsVO {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "commentsgen")
+	@SequenceGenerator(name = "commentsgen", sequenceName = "commentsseq", initialValue = 1000000001, allocationSize = 1)
+	@Column(name = "commentsid")
+	private Long id;
+	@Column(name = "comment")
+	private String comment;
+	@Column(name = "commentname")
+	private String commentName;
+	@Column(name = "commenttime")
+	private LocalDateTime commentsTime = LocalDateTime.now();
+	@Column(name = "ticketid")
+	private Long ticketId;
+
+	@Column(name = "orgid")
+	private Long orgId;
+
+	@Column(name = "sourceusername")
+	private String sourceUserName;
+
+	@Column(name = "sourceid")
+	private Long sourceId;
+
+	@Column(name = "application")
+	private String application;
+
+	@Column(name = "sourceorgid")
+	private Long sourceOrgId;
+
+	@Column(name = "sourceticketid")
+	private Long sourceTicketId;
+
+//	@ManyToOne
+//	@JsonBackReference
+//	@JoinColumn(name = "ticketid")
+//	TicketVO ticketVO;
+
+	@Embedded
+	private CreatedUpdatedDate commondate = new CreatedUpdatedDate();
+
+	@OneToMany(mappedBy = "commentsVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<TicketCommentImageVO> ticketCommentImageVO;
+
+}
