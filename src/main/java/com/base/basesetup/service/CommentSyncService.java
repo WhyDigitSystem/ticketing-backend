@@ -84,9 +84,12 @@ public class CommentSyncService {
 			List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/createComments",
 					"http://139.5.190.73:8033/api/ticketcontroller/createComments",
 					"http://139.5.190.203:9001/api/ticketcontroller/createComments",
-					"http://139.5.190.203:8033/api/ticketcontroller/createComments","http://139.5.190.244:8011/api/ticketcontroller/createComments","http://139.5.190.73:8047/api/ticketcontroller/createComments");
+					"http://139.5.190.203:8033/api/ticketcontroller/createComments",
+					"http://139.5.190.244:8011/api/ticketcontroller/createComments",
+					"http://139.5.190.73:8047/api/ticketcontroller/createComments",
+					"http://139.5.190.73:8053/api/ticketcontroller/createComments",
+					"http://139.5.190.73:8051/api/ticketcontroller/createComments");
 
-		
 			for (String url : urls) {
 				try {
 					System.out.println("➡️ Sending to: " + url + " Payload: " + body);
@@ -134,9 +137,11 @@ public class CommentSyncService {
 			List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/updateComments",
 					"http://139.5.190.73:8033/api/ticketcontroller/updateComments",
 					"http://139.5.190.203:9001/api/ticketcontroller/updateComments",
-					"http://139.5.190.203:8033/api/ticketcontroller/updateComments","http://139.5.190.244:8011/api/ticketcontroller/updateComments","http://139.5.190.73:8047/api/ticketcontroller/updateComments");
-			
-
+					"http://139.5.190.203:8033/api/ticketcontroller/updateComments",
+					"http://139.5.190.244:8011/api/ticketcontroller/updateComments",
+					"http://139.5.190.73:8047/api/ticketcontroller/updateComments",
+					"http://139.5.190.73:8053/api/ticketcontroller/updateComments",
+					"http://139.5.190.73:8051/api/ticketcontroller/updateComments");
 
 			for (String url : urls) {
 				try {
@@ -198,7 +203,11 @@ public class CommentSyncService {
 			List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/deleteComments",
 					"http://139.5.190.73:8033/api/ticketcontroller/deleteComments",
 					"http://139.5.190.203:9001/api/ticketcontroller/deleteComments",
-					"http://139.5.190.203:8033/api/ticketcontroller/deleteComments","http://139.5.190.244:8061/api/ticketcontroller/deleteComments","http://139.5.190.73:8047/api/ticketcontroller/deleteComments");
+					"http://139.5.190.203:8033/api/ticketcontroller/deleteComments",
+					"http://139.5.190.244:8061/api/ticketcontroller/deleteComments",
+					"http://139.5.190.73:8047/api/ticketcontroller/deleteComments",
+					"http://139.5.190.73:8053/api/ticketcontroller/deleteComments",
+					"http://139.5.190.73:8051/api/ticketcontroller/deleteComments");
 
 			for (String url : urls) {
 				try {
