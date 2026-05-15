@@ -56,7 +56,6 @@ public interface TicketService {
 
 	List<TicketCommentImageVO> getAllCommentImageByCommentId(Long commentId);
 
-	ResponseEntity<?> deleteComments(Long id);
 
 	List<CommentsVO> getCommentsByTicketId(Long ticketId);
 

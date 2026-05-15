@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -318,13 +319,7 @@ public class TicketServicelmpl implements TicketService {
 //		}
 //	}
 
-	@Override
-	public ResponseEntity<?> deleteComments(Long id) {
 
-		commentsRepo.deleteById(id);
-		return ResponseEntity.ok().body("Comment with ID " + id + " has been deleted.");
-
-	}
 
 //	@Override
 //	public TicketVO changeTicketStatus(ChangeTicketStatusDTO changeTicketStatusDTO) {
@@ -671,32 +666,77 @@ public class TicketServicelmpl implements TicketService {
 		return vo;
 	}
 
+//	@Override
+//	public void deleteComments(Long id, Long sourceId) {
+//
+//		if (id != null) {
+//
+//			CommentsVO vo = commentsRepo.findById(id).orElseThrow(() -> new RuntimeException("Not found in B"));
+//
+//			commentsRepo.delete(vo);
+//
+//			System.out.println("🗑️ Deleted in Server B (LOCAL)");
+//
+//			commentSyncService.deleteCommentsInMultipleServers(vo.getId());
+//		}
+//
+//		else if (sourceId != null) {
+//
+//			CommentsVO vo = commentsRepo.findBySourceId(sourceId)
+//					.orElseThrow(() -> new RuntimeException("Not found in B by sourceId"));
+//
+//			commentsRepo.delete(vo);
+//
+//			System.out.println("🗑️ Deleted in Server B (SYNC)");
+//		}
+//
+//		else {
+//			throw new RuntimeException("❌ id and sourceId both NULL");
+//		}
+//	}
+	
 	@Override
 	public void deleteComments(Long id, Long sourceId) {
 
-		if (id != null) {
+	    // ✅ LOCAL DELETE
+	    if (id != null) {
 
-			CommentsVO vo = commentsRepo.findById(id).orElseThrow(() -> new RuntimeException("Not found in B"));
+	        CommentsVO vo = commentsRepo.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-			commentsRepo.delete(vo);
+	        Long syncId = (vo.getSourceId() != null && vo.getSourceId() != 0)
+	                ? vo.getSourceId()
+	                : vo.getId();
 
-			System.out.println("🗑️ Deleted in Server B (LOCAL)");
+	        commentsRepo.delete(vo);
 
-			commentSyncService.deleteCommentsInMultipleServers(vo.getId());
-		}
+	        System.out.println("🗑️ LOCAL DELETE SUCCESS");
 
-		else if (sourceId != null) {
+	        // ✅ sync delete
+	        commentSyncService.deleteCommentsInMultipleServers(syncId);
+	    }
 
-			CommentsVO vo = commentsRepo.findBySourceId(sourceId)
-					.orElseThrow(() -> new RuntimeException("Not found in B by sourceId"));
+	    // ✅ SYNC DELETE
+	    else if (sourceId != null) {
 
-			commentsRepo.delete(vo);
+	        Optional<CommentsVO> optional =
+	                commentsRepo.findBySourceId(sourceId);
 
-			System.out.println("🗑️ Deleted in Server B (SYNC)");
-		}
+	        if (optional.isPresent()) {
 
-		else {
-			throw new RuntimeException("❌ id and sourceId both NULL");
-		}
+	            commentsRepo.delete(optional.get());
+
+	            System.out.println("🗑️ SYNC DELETE SUCCESS sourceId: " + sourceId);
+
+	        } else {
+
+	            System.out.println("⚠️ No Record Found sourceId: " + sourceId);
+	        }
+	    }
+
+	    else {
+
+	        throw new RuntimeException("❌ BOTH NULL");
+	    }
 	}
 }

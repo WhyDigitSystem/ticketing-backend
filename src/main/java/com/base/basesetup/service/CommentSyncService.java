@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.base.basesetup.entity.CommentsVO;
@@ -22,42 +24,6 @@ public class CommentSyncService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
-//	@Async("taskExecutor")
-//	public void sendToServerA(CommentsVO vo) {
-//
-//		try {
-//			System.out.println("🚀 Sending B → A for ID: " + vo.getId());
-//
-//			Map<String, Object> body = new HashMap<>();
-//
-//			body.put("comments", vo.getComment());
-////	        body.put("userName", vo.getCommentName());
-//			body.put("sourceTicketId", vo.getTicketId());
-//			body.put("sourceId", vo.getId());
-//			body.put("sourceUserName", vo.getCommentName());
-//			body.put("sourceOrgId", vo.getOrgId());
-//			body.put("ticketId", vo.getTicketId());
-//
-////	        String url = "http://localhost:8021/api/ticketcontroller/createComments";
-//			String url = "http://139.5.190.203:8021/api/ticketcontroller/createComments";
-//
-//			HttpHeaders headers = new HttpHeaders();
-//			headers.setContentType(MediaType.APPLICATION_JSON);
-//
-//			HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-//
-//			System.out.println("➡️ B → A Payload: " + body);
-//
-//			ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-//
-//			System.out.println("✅ B → A Response: " + response.getBody());
-//
-//		} catch (Exception e) {
-//			System.out.println("❌ ERROR B → A");
-//			e.printStackTrace();
-//		}
-//	}
 
 	@Async("taskExecutor")
 	public void sendCommentsToMultipleServers(CommentsVO vo) {
@@ -89,6 +55,9 @@ public class CommentSyncService {
 					"http://139.5.190.73:8047/api/ticketcontroller/createComments",
 					"http://139.5.190.73:8053/api/ticketcontroller/createComments",
 					"http://139.5.190.73:8051/api/ticketcontroller/createComments");
+
+//			List<String> urls = Arrays.asList("http://localhost:8021/api/ticketcontroller/createComments",
+//					"http://localhost:9001/api/ticketcontroller/createComments");
 
 			for (String url : urls) {
 				try {
@@ -125,10 +94,6 @@ public class CommentSyncService {
 			body.put("sourceUserName", vo.getSourceUserName());
 			body.put("orgId", vo.getSourceOrgId());
 
-//			String url = "http://localhost:8021/api/ticketcontroller/updateComments";
-
-//			String url = "http://139.5.190.203:8021/api/ticketcontroller/updateComments";
-
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -163,43 +128,19 @@ public class CommentSyncService {
 		}
 	}
 
-//	@Async("taskExecutor")
-//	public void deleteInServerA(Long sourceId) {
-//
-//		try {
-//
-//			String url = "http://139.5.190.203:8021/api/ticketcontroller/deleteComments?sourceId=" + sourceId;
-//
-//			System.out.println("📤 B → A DELETE URL: " + url);
-//
-//			restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
-//
-//			System.out.println("✅ B → A delete synced");
-//
-//		} catch (Exception e) {
-//			System.err.println("❌ Error calling A");
-//			e.printStackTrace();
-//		}
-//	}
-
 	@Async("taskExecutor")
 	public void deleteCommentsInMultipleServers(Long sourceId) {
 
 		try {
+
 			System.out.println("🚀 DELETE Sync Start SourceId: " + sourceId);
 
 			RestTemplate restTemplate = new RestTemplate();
 
-			// ✅ ONLY sourceId (as per your requirement)
-			Map<String, Object> body = new HashMap<>();
-			body.put("sourceId", sourceId);
+//			List<String> urls = Arrays.asList("http://localhost:8021/api/ticketcontroller/deleteComments",
+//					"http://localhost:9001/api/ticketcontroller/deleteComments",
+//					"http://localhost:8061/api/ticketcontroller/deleteComments");
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-
-			HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-
-			// ✅ MULTIPLE SERVERS
 			List<String> urls = Arrays.asList("http://139.5.190.203:8021/api/ticketcontroller/deleteComments",
 					"http://139.5.190.73:8033/api/ticketcontroller/deleteComments",
 					"http://139.5.190.203:9001/api/ticketcontroller/deleteComments",
@@ -209,22 +150,36 @@ public class CommentSyncService {
 					"http://139.5.190.73:8053/api/ticketcontroller/deleteComments",
 					"http://139.5.190.73:8051/api/ticketcontroller/deleteComments");
 
-			for (String url : urls) {
+			for (String baseUrl : urls) {
+
 				try {
-					System.out.println("➡️ DELETE to: " + url);
-					System.out.println("📦 Payload: " + body);
 
-					restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
+					// ✅ final URL
+					String finalUrl = baseUrl + "?sourceId=" + sourceId;
 
-					System.out.println("✅ Deleted in: " + url);
+					System.out.println("➡️ Calling URL: " + finalUrl);
+
+					// ✅ CALL DELETE
+					ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.DELETE, null,
+							String.class);
+
+					System.out.println("✅ SUCCESS: " + baseUrl);
+					System.out.println("📩 Response: " + response.getBody());
+
+				} catch (HttpClientErrorException.NotFound e) {
+
+					System.err.println("❌ Record NOT FOUND in: " + baseUrl);
 
 				} catch (Exception e) {
-					System.err.println("❌ Delete Failed: " + url + " | " + e.getMessage());
+
+					System.err.println("❌ FAILED: " + baseUrl);
+					System.err.println("❌ ERROR: " + e.getMessage());
 				}
 			}
 
 		} catch (Exception e) {
-			System.out.println("❌ DELETE Sync Error");
+
+			System.out.println("❌ DELETE Sync Global Error");
 			e.printStackTrace();
 		}
 	}
