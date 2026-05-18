@@ -1,11 +1,14 @@
 package com.base.basesetup.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -544,32 +547,6 @@ public class TicketController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	@PostMapping("/uploadTicketBySourceId")
-	public ResponseEntity<ResponseDTO> uploadTicketBySourceId(@RequestParam("file") MultipartFile file,
-			@RequestParam Long sourceId) {
-		String methodName = "uploadTicketBySourceId()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		TicketVO ticketVO = null;
-		try {
-			ticketVO = ticketService.uploadTicketBySourceId(file, sourceId);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error("Unable To Create New Ticket", methodName, errorMsg);
-		}
-		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket Successfully Created");
-			responseObjectsMap.put("ticketVO", ticketVO);
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Unable To Create Ticket", errorMsg);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
-	}
-
 	@GetMapping("/getAllCommentsAnotherServer")
 	public ResponseEntity<ResponseDTO> getAllCommentsAnotherServer(@RequestParam Long ticketId) {
 		String methodName = "getAllCommentsAnotherServer()";
@@ -651,6 +628,24 @@ public class TicketController extends BaseController {
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok(responseDTO);
+	}
+
+	@PostMapping("/uploadTicketBySourceId")
+	public ResponseEntity<String> uploadTicketBySourceId(
+
+			@RequestParam MultipartFile file,
+
+			@RequestParam Long sourceId) throws IOException {
+
+		String response = ticketService.uploadTicketBySourceId(file, sourceId);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/viewTicketImage/**")
+	public ResponseEntity<byte[]> viewTicketImage(HttpServletRequest request) throws IOException {
+
+		return ticketService.viewTicketImage(request);
 	}
 
 }

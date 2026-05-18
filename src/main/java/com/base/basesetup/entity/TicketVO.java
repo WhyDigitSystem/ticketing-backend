@@ -1,6 +1,7 @@
 package com.base.basesetup.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -47,6 +48,15 @@ public class TicketVO {
 	@Column(name = "docid")
 	private String docId;
 
+	@Column(name = "filesize")
+	private Long fileSize;
+
+	@Column(name = "contenttype")
+	private String contentType;
+
+	@Column(name = "uploadon")
+	private LocalDateTime uploadOn;
+
 	@Column(name = "docdate")
 	private LocalDate docDate = LocalDate.now();
 
@@ -87,7 +97,7 @@ public class TicketVO {
 
 	@Column(name = "email")
 	private String email;
-	
+
 	@Column(name = "sourceemail")
 	private String sourceEmail;
 
@@ -96,6 +106,12 @@ public class TicketVO {
 
 	@Column(name = "sourceorgid")
 	private Long sourceOrgId;
+
+	@Column(name = "filename")
+	private String fileName;
+
+	@Column(name = "filepath")
+	private String filePath;
 
 	@Column(name = "sourcebranch")
 	private String sourceBranch;
@@ -108,10 +124,10 @@ public class TicketVO {
 
 	@Column(name = "application")
 	private String application;
-	
+
 	@Column(name = "username")
 	private String userName;
-	
+
 	@Column(name = "ticketstatus")
 	private String ticketStatus;
 

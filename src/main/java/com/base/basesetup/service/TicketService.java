@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,7 +69,7 @@ public interface TicketService {
 
 	List<Map<String, Object>> getTicketPriorityStatusCount();
 
-	TicketVO uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException;
+	String uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException;
 
 	Map<String, Object> createComments(CommentDTO commentDTO);
 
@@ -76,6 +78,8 @@ public interface TicketService {
 	List<CommentsVO> getAllCommentsMyServer(Long ticketId);
 
 	void deleteComments(Long id, Long sourceId);
+
+	ResponseEntity<byte[]> viewTicketImage(HttpServletRequest request) throws IOException;
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 

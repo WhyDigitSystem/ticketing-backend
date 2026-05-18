@@ -1,8 +1,14 @@
 package com.base.basesetup.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.base.basesetup.dto.AssignTicketDTO;
 import com.base.basesetup.dto.ChangeTicketStatusDTO;
@@ -103,12 +111,12 @@ public class TicketServicelmpl implements TicketService {
 		return ticketRepo.save(ticketVO);
 	}
 
-	@Override
-	public TicketVO uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException {
-		TicketVO ticketVO = ticketRepo.findBySourceId(sourceId);
-		ticketVO.setImageData(file.getBytes());
-		return ticketRepo.save(ticketVO);
-	}
+//	@Override
+//	public TicketVO uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException {
+//		TicketVO ticketVO = ticketRepo.findBySourceId(sourceId);
+//		ticketVO.setImageData(file.getBytes());
+//		return ticketRepo.save(ticketVO);
+//	}
 
 	@Override
 	public List<TicketVO> getAllTicket() {
@@ -318,8 +326,6 @@ public class TicketServicelmpl implements TicketService {
 //			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with ID " + commentDTO.getId());
 //		}
 //	}
-
-
 
 //	@Override
 //	public TicketVO changeTicketStatus(ChangeTicketStatusDTO changeTicketStatusDTO) {
@@ -694,49 +700,221 @@ public class TicketServicelmpl implements TicketService {
 //			throw new RuntimeException("❌ id and sourceId both NULL");
 //		}
 //	}
-	
+
 	@Override
 	public void deleteComments(Long id, Long sourceId) {
 
-	    // ✅ LOCAL DELETE
-	    if (id != null) {
+		// ✅ LOCAL DELETE
+		if (id != null) {
 
-	        CommentsVO vo = commentsRepo.findById(id)
-	                .orElseThrow(() -> new RuntimeException("Comment not found"));
+			CommentsVO vo = commentsRepo.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
 
-	        Long syncId = (vo.getSourceId() != null && vo.getSourceId() != 0)
-	                ? vo.getSourceId()
-	                : vo.getId();
+			Long syncId = (vo.getSourceId() != null && vo.getSourceId() != 0) ? vo.getSourceId() : vo.getId();
 
-	        commentsRepo.delete(vo);
+			commentsRepo.delete(vo);
 
-	        System.out.println("🗑️ LOCAL DELETE SUCCESS");
+			System.out.println("🗑️ LOCAL DELETE SUCCESS");
 
-	        // ✅ sync delete
-	        commentSyncService.deleteCommentsInMultipleServers(syncId);
-	    }
+			// ✅ sync delete
+			commentSyncService.deleteCommentsInMultipleServers(syncId);
+		}
 
-	    // ✅ SYNC DELETE
-	    else if (sourceId != null) {
+		// ✅ SYNC DELETE
+		else if (sourceId != null) {
 
-	        Optional<CommentsVO> optional =
-	                commentsRepo.findBySourceId(sourceId);
+			Optional<CommentsVO> optional = commentsRepo.findBySourceId(sourceId);
 
-	        if (optional.isPresent()) {
+			if (optional.isPresent()) {
 
-	            commentsRepo.delete(optional.get());
+				commentsRepo.delete(optional.get());
 
-	            System.out.println("🗑️ SYNC DELETE SUCCESS sourceId: " + sourceId);
+				System.out.println("🗑️ SYNC DELETE SUCCESS sourceId: " + sourceId);
 
-	        } else {
+			} else {
 
-	            System.out.println("⚠️ No Record Found sourceId: " + sourceId);
-	        }
-	    }
+				System.out.println("⚠️ No Record Found sourceId: " + sourceId);
+			}
+		}
 
-	    else {
+		else {
 
-	        throw new RuntimeException("❌ BOTH NULL");
-	    }
+			throw new RuntimeException("❌ BOTH NULL");
+		}
+	}
+
+	@Value("${file.upload-dirs}")
+	private String uploadBasePath;
+
+	@Override
+	@Transactional
+	public String uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException {
+
+		TicketVO ticketVO = ticketRepo.findBySourceId(sourceId);
+
+		// CREATE NEW RECORD
+		if (ticketVO == null) {
+
+			ticketVO = new TicketVO();
+
+			ticketVO.setSourceId(sourceId);
+		}
+
+		// BASE FOLDER
+		Path ticketFolder = Paths.get(uploadBasePath, "ticketimages", sourceId.toString());
+
+		createDirectoryTicket(ticketFolder);
+
+		// DELETE OLD FILE
+		if (ticketVO.getFilePath() != null && !ticketVO.getFilePath().isEmpty()) {
+
+			deleteFileSafelyTicket(ticketVO.getFilePath());
+		}
+
+		// ORIGINAL FILE NAME
+		String originalName = file.getOriginalFilename();
+
+		if (originalName == null) {
+
+			originalName = "file";
+		}
+
+		// REMOVE SPACES
+		originalName = originalName.replaceAll("\\s+", "_");
+
+		// EXTENSION
+		String extension = "";
+
+		if (originalName.contains(".")) {
+
+			extension = originalName.substring(originalName.lastIndexOf("."));
+
+			originalName = originalName.substring(0, originalName.lastIndexOf("."));
+		}
+
+		// NEW FILE NAME
+		String fileName = originalName + "_" + sourceId + extension;
+
+		// FINAL FILE PATH
+		Path filePath = ticketFolder.resolve(fileName);
+
+		// SAVE FILE
+		try (InputStream inputStream = file.getInputStream()) {
+
+			Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+		}
+
+		// BASE URL
+		String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/ticket/viewTicketImage/")
+				.toUriString();
+
+		// RELATIVE PATH
+		String relativePath = uploadBasePath.replace("\\", "/");
+
+		relativePath = filePath.toString().replace("\\", "/").replace(relativePath + "/", "");
+
+		// PUBLIC URL
+		String publicUrl = baseUrl + relativePath;
+
+		// SAVE DB
+		ticketVO.setFileName(fileName);
+
+		ticketVO.setFilePath(publicUrl);
+
+		ticketVO.setFileSize(file.getSize());
+
+		ticketVO.setContentType(file.getContentType());
+
+		ticketVO.setUploadOn(LocalDateTime.now());
+
+		ticketRepo.save(ticketVO);
+
+		System.out.println("FILE SAVED : " + filePath.toAbsolutePath());
+
+		System.out.println("PUBLIC URL : " + publicUrl);
+
+		return "Image uploaded successfully";
+	}
+
+	private void deleteFileSafelyTicket(String fileUrl) {
+
+		try {
+
+			String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+
+			String relativePath = fileUrl.replace(baseUrl + "/api/ticket/viewTicketImage/", "");
+
+			Path filePath = Paths.get(uploadBasePath, relativePath);
+
+			if (Files.exists(filePath)) {
+
+				Files.delete(filePath);
+
+				System.out.println("Old file deleted : " + filePath);
+			}
+
+		} catch (Exception e) {
+
+			System.err.println("Unable to delete file : " + fileUrl);
+		}
+	}
+
+	private void createDirectoryTicket(Path path) throws IOException {
+
+		if (!Files.exists(path)) {
+
+			Files.createDirectories(path);
+		}
+	}
+
+	@Override
+	public ResponseEntity<byte[]> viewTicketImage(HttpServletRequest request) throws IOException {
+
+		return serveFileTicket(request, "/api/ticket/viewTicketImage/", uploadBasePath);
+	}
+
+	private ResponseEntity<byte[]> serveFileTicket(HttpServletRequest request, String apiPrefix, String uploadBasePath)
+			throws IOException {
+
+		String uri = request.getRequestURI();
+
+		// REMOVE API PREFIX
+		String relativePath = uri.replace(apiPrefix, "");
+
+		// URL DECODE
+		relativePath = URLDecoder.decode(relativePath, StandardCharsets.UTF_8);
+
+		// REMOVE uploads/
+		if (relativePath.startsWith("uploads/")) {
+
+			relativePath = relativePath.substring("uploads/".length());
+		}
+
+		Path baseDir = Paths.get(uploadBasePath).toAbsolutePath().normalize();
+
+		Path filePath = baseDir.resolve(relativePath).normalize();
+
+		// SECURITY CHECK
+		if (!filePath.startsWith(baseDir)) {
+
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
+		// FILE EXISTS
+		if (!Files.exists(filePath)) {
+
+			return ResponseEntity.notFound().build();
+		}
+
+		String contentType = Files.probeContentType(filePath);
+
+		if (contentType == null) {
+
+			contentType = "application/octet-stream";
+		}
+
+		byte[] data = Files.readAllBytes(filePath);
+
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "inline").body(data);
 	}
 }
