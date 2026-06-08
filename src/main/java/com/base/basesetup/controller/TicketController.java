@@ -522,7 +522,7 @@ public class TicketController extends BaseController {
 	}
 
 	@GetMapping("/getTicketPriorityStatusCount")
-	public ResponseEntity<ResponseDTO> getTicketPriorityStatusCount() {
+	public ResponseEntity<ResponseDTO> getTicketPriorityStatusCount(@RequestParam String assignedTo) {
 		String methodName = "getTicketPriorityStatusCount()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -530,7 +530,7 @@ public class TicketController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> ticketVO = new ArrayList<>();
 		try {
-			ticketVO = ticketService.getTicketPriorityStatusCount();
+			ticketVO = ticketService.getTicketPriorityStatusCount(assignedTo);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
@@ -647,5 +647,108 @@ public class TicketController extends BaseController {
 
 		return ticketService.viewTicketImage(request);
 	}
+
+	@GetMapping("/getTicketReports")
+	public ResponseEntity<ResponseDTO> getTicketReports(@RequestParam String application, @RequestParam(required=false) String fromDate,
+			@RequestParam(required=false) String toDate) {
+		String methodName = "getTicketReports()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<TicketVO> ticketVO = new ArrayList<TicketVO>();
+		try {
+			ticketVO = ticketService.getTicketReports(application, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Get All Reports");
+			responseObjectsMap.put("ticketVO", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Report", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getApplicationDetails")
+	public ResponseEntity<ResponseDTO> getApplicationDetails() {
+		String methodName = "getApplicationDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> ticketVO = new ArrayList<>();
+		try {
+			ticketVO = ticketService.getApplicationDetails();
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All application Status");
+			responseObjectsMap.put("ticketPriorityStatusDetails", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get application Information",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getRecentTicket")
+	public ResponseEntity<ResponseDTO> getRecentTicket(@RequestParam String application) {
+		String methodName = "getRecentTicket()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<TicketVO> ticketVO = new ArrayList<TicketVO>();
+		try {
+			ticketVO = ticketService.getRecentTicket(application);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Get All Reports");
+			responseObjectsMap.put("ticketVO", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Ticket Report", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getRecentTopAssign")
+	public ResponseEntity<ResponseDTO> getRecentTopAssign(@RequestParam String application) {
+		String methodName = "getRecentTopAssign()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> ticketVO = new ArrayList<>();
+		try {
+			ticketVO = ticketService.getRecentTopAssign(application);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Get All Reports");
+			responseObjectsMap.put("ticketVO", ticketVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Unable to Get Top Report", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 
 }

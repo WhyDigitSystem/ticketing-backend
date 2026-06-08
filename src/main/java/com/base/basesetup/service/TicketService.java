@@ -58,7 +58,6 @@ public interface TicketService {
 
 	List<TicketCommentImageVO> getAllCommentImageByCommentId(Long commentId);
 
-
 	List<CommentsVO> getCommentsByTicketId(Long ticketId);
 
 	List<Object[]> getTicketStatusByClient(String customer);
@@ -66,8 +65,6 @@ public interface TicketService {
 	Set<Object[]> getEmployeeTicketStatusCount();
 
 	List<Map<String, Object>> getTicketStatusCount();
-
-	List<Map<String, Object>> getTicketPriorityStatusCount();
 
 	String uploadTicketBySourceId(MultipartFile file, Long sourceId) throws IOException;
 
@@ -80,6 +77,16 @@ public interface TicketService {
 	void deleteComments(Long id, Long sourceId);
 
 	ResponseEntity<byte[]> viewTicketImage(HttpServletRequest request) throws IOException;
+
+	List<TicketVO> getTicketReports(String application, String fromDate, String toDate);
+
+	List<Map<String, Object>> getApplicationDetails();
+
+	List<Map<String, Object>> getTicketPriorityStatusCount(String assignedTo);
+
+	List<TicketVO> getRecentTicket(String application);
+
+	List<Map<String, Object>> getRecentTopAssign(String application);
 
 //	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
 

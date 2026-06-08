@@ -38,7 +38,7 @@ public class AsyncEmailService {
 				"http://139.5.190.73:8053/api/ticketcontroller/updateTicketFromRemote",
 				"http://139.5.190.73:8047/api/ticketcontroller/updateTicketFromRemote",
 				"http://139.5.190.73:8051/api/ticketcontroller/updateTicketFromRemote",
-				"http://139.5.190.203:8033/api/ticketcontroller/updateTicketFromRemote");
+				"http://139.5.190.203:8033/api/ticketcontroller/updateTicketFromRemote","http://139.5.190.203:8053/api/ticketcontroller/updateTicketFromRemote");
 
 		for (String url : urls) {
 			try {

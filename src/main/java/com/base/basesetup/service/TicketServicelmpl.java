@@ -1,8 +1,9 @@
 package com.base.basesetup.service;
 
-import java.io.File;
 import java.io.IOException;
+
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,7 +13,6 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,16 +27,13 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.base.basesetup.dto.AssignTicketDTO;
@@ -523,9 +520,9 @@ public class TicketServicelmpl implements TicketService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getTicketPriorityStatusCount() {
+	public List<Map<String, Object>> getTicketPriorityStatusCount(String assignedTo) {
 
-		Set<Object[]> getTicketPriorityStatusCountDetails = ticketRepo.getPriorityStatusCountDetails();
+		Set<Object[]> getTicketPriorityStatusCountDetails = ticketRepo.getPriorityStatusCountDetails(assignedTo);
 		return getPriorityTicketCount(getTicketPriorityStatusCountDetails);
 	}
 
@@ -537,6 +534,9 @@ public class TicketServicelmpl implements TicketService {
 			t.put("normal", tick[1] != null ? Integer.parseInt(tick[1].toString()) : 0);
 			t.put("medium", tick[2] != null ? Integer.parseInt(tick[2].toString()) : 0);
 			t.put("total", tick[3] != null ? Integer.parseInt(tick[3].toString()) : 0);
+			t.put("highPer", tick[4] != null ? new BigDecimal(tick[4].toString()) : BigDecimal.ZERO);
+			t.put("normalPer", tick[5] != null ? new BigDecimal(tick[5].toString()) : BigDecimal.ZERO);
+			t.put("mediumPer", tick[6] != null ? new BigDecimal(tick[6].toString()) : BigDecimal.ZERO);
 			tickets.add(t);
 		}
 		return tickets;
@@ -917,4 +917,52 @@ public class TicketServicelmpl implements TicketService {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "inline").body(data);
 	}
+
+	@Override
+	public List<TicketVO> getTicketReports(String application, String fromDate, String toDate) {
+
+		return ticketRepo.getTicketReports(application, fromDate, toDate);
+	}
+
+	@Override
+	public List<Map<String, Object>> getApplicationDetails() {
+
+		Set<Object[]> getApplicationDetails = ticketRepo.getApplicationDetails();
+		return getApplicationDetails(getApplicationDetails);
+	}
+
+	private List<Map<String, Object>> getApplicationDetails(Set<Object[]> getApplicationDetails) {
+		List<Map<String, Object>> tickets = new ArrayList<>();
+		for (Object[] tick : getApplicationDetails) {
+			Map<String, Object> t = new HashMap<>();
+			t.put("application", tick[0] != null ? tick[0].toString() : "");
+			tickets.add(t);
+		}
+		return tickets;
+	}
+	
+	@Override
+	public List<TicketVO> getRecentTicket(String application) {
+
+		return ticketRepo.getRecentTicket(application);
+	}
+	
+	@Override
+	public List<Map<String, Object>> getRecentTopAssign(String application) {
+
+		Set<Object[]> getApplicationDetails = ticketRepo.getRecentTopAssign( application);
+		return getRecentTopAssign(getApplicationDetails);
+	}
+
+	private List<Map<String, Object>> getRecentTopAssign(Set<Object[]> getApplicationDetails) {
+		List<Map<String, Object>> tickets = new ArrayList<>();
+		for (Object[] tick : getApplicationDetails) {
+			Map<String, Object> t = new HashMap<>();
+			t.put("application", tick[0] != null ? tick[0].toString() : "");
+			t.put("count", tick[1] != null ? tick[1].toString() : "");
+			tickets.add(t);
+		}
+		return tickets;
+	}
+
 }

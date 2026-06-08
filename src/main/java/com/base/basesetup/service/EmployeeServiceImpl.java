@@ -121,21 +121,40 @@ public class EmployeeServiceImpl implements EmployeeService {
 		    // 🔹 Store old email BEFORE update
 		    String oldEmail = employeeVO.getEmail();
 
-		    // 🔹 Code validation
-		    if (!employeeVO.getCode().equals(createEmployeeDTO.getCode())) {
-		        if (employeeRepo.existsByCode(createEmployeeDTO.getCode())) {
-		            throw new ApplicationException("Employee Code Already Exist");
-		        }
-		        employeeVO.setCode(createEmployeeDTO.getCode());
-		    }
+//		    // 🔹 Code validation
+//		    if (!employeeVO.getCode().equals(createEmployeeDTO.getCode())) {
+//		        if (employeeRepo.existsByCode(createEmployeeDTO.getCode())) {
+//		            throw new ApplicationException("Employee Code Already Exist");
+//		        }
+//		        employeeVO.setCode(createEmployeeDTO.getCode());
+//		    }
+//
+//		    // 🔹 Email validation
+//		    if (!employeeVO.getEmail().equals(createEmployeeDTO.getEmail())) {
+//		        if (employeeRepo.existsByEmail(createEmployeeDTO.getEmail())) {
+//		            throw new ApplicationException("Employee Email Already Exist");
+//		        }
+//		        employeeVO.setEmail(createEmployeeDTO.getEmail());
+//		    }
+		    
+		    if (!employeeVO.getCode().equalsIgnoreCase(createEmployeeDTO.getCode())) {
+				if (employeeRepo.existsByCodeAndId(createEmployeeDTO.getCode(), createEmployeeDTO.getId())) {
+					String errorMessage = String.format("The Code: %s  already exists This Organization.",
+							createEmployeeDTO.getCode());
+					throw new ApplicationException(errorMessage);
+				}
+				}
+		    
+		    employeeVO.setCode(createEmployeeDTO.getCode());
 
-		    // 🔹 Email validation
-		    if (!employeeVO.getEmail().equals(createEmployeeDTO.getEmail())) {
-		        if (employeeRepo.existsByEmail(createEmployeeDTO.getEmail())) {
-		            throw new ApplicationException("Employee Email Already Exist");
-		        }
-		        employeeVO.setEmail(createEmployeeDTO.getEmail());
-		    }
+				if (!employeeVO.getEmail().equalsIgnoreCase(createEmployeeDTO.getEmail())) {
+				if (employeeRepo.existsByEmailAndId(createEmployeeDTO.getEmail(), createEmployeeDTO.getId())) {
+					String errorMessage = String.format("The Email: %s  already exists This Organization.",
+							createEmployeeDTO.getEmail());
+					throw new ApplicationException(errorMessage);
+				}}
+				employeeVO.setEmail(createEmployeeDTO.getEmail());
+
 
 		    // 🔹 Other fields update
 		    employeeVO.setEmployee(createEmployeeDTO.getEmployee());
