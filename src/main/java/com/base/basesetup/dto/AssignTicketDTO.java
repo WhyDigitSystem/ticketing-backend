@@ -19,4 +19,6 @@ public class AssignTicketDTO {
 
 	private String email;
 
+	private String assignPriority;
+
 }

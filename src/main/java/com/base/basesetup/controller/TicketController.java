@@ -649,8 +649,8 @@ public class TicketController extends BaseController {
 	}
 
 	@GetMapping("/getTicketReports")
-	public ResponseEntity<ResponseDTO> getTicketReports(@RequestParam String application, @RequestParam(required=false) String fromDate,
-			@RequestParam(required=false) String toDate) {
+	public ResponseEntity<ResponseDTO> getTicketReports(@RequestParam String application,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
 		String methodName = "getTicketReports()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -699,7 +699,7 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getRecentTicket")
 	public ResponseEntity<ResponseDTO> getRecentTicket(@RequestParam String application) {
 		String methodName = "getRecentTicket()";
@@ -724,7 +724,7 @@ public class TicketController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getRecentTopAssign")
 	public ResponseEntity<ResponseDTO> getRecentTopAssign(@RequestParam String application) {
 		String methodName = "getRecentTopAssign()";
@@ -750,5 +750,31 @@ public class TicketController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@PutMapping("/assignedPriority")
+	public ResponseEntity<ResponseDTO> assignedPriority(@RequestParam Long ticketId, @RequestParam String priority) {
+		String methodName = "assignedPriority()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			TicketVO ticketVO = ticketService.assignedPriority(ticketId, priority);
+			if (ticketVO != null) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ticket assigned successfully");
+				responseObjectsMap.put("ticketAssign", ticketVO);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				errorMsg = "Ticket not found for ID: " + ticketId;
+				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+			}
 
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Ticket Assign Failed", e);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok(responseDTO);
+	}
 }

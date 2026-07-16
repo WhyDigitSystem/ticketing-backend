@@ -130,6 +130,9 @@ public class TicketVO {
 
 	@Column(name = "ticketstatus")
 	private String ticketStatus;
+	
+	@Column(name = "assignpriority")
+	private String assignPriority;
 
 	@Lob
 	@Column(name = "imagedata", columnDefinition = "LONGBLOB")

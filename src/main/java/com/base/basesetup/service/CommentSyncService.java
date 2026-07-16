@@ -55,7 +55,9 @@ public class CommentSyncService {
 					"http://139.5.190.73:8047/api/ticketcontroller/createComments",
 					"http://139.5.190.73:8053/api/ticketcontroller/createComments",
 					"http://139.5.190.73:8051/api/ticketcontroller/createComments",
-					"http://elevateblr.ddns.net:8033/api/ticketcontroller/createComments");
+					"http://elevateblr.ddns.net:8033/api/ticketcontroller/createComments",
+					"http://139.5.190.244:8085/api/ticketcontroller/createComments",
+					"http://139.5.190.73:8055/api/ticketcontroller/createComments");
 
 //			List<String> urls = Arrays.asList("http://localhost:8021/api/ticketcontroller/createComments",
 //					"http://localhost:9001/api/ticketcontroller/createComments");
@@ -108,7 +110,9 @@ public class CommentSyncService {
 					"http://139.5.190.73:8047/api/ticketcontroller/updateComments",
 					"http://139.5.190.73:8053/api/ticketcontroller/updateComments",
 					"http://139.5.190.73:8051/api/ticketcontroller/updateComments",
-					"http://elevateblr.ddns.net:8033/api/ticketcontroller/updateComments");
+					"http://elevateblr.ddns.net:8033/api/ticketcontroller/updateComments",
+					"http://139.5.190.244:8085/api/ticketcontroller/updateComments",
+					"http://139.5.190.73:8055/api/ticketcontroller/updateComments");
 
 			for (String url : urls) {
 				try {
@@ -151,7 +155,9 @@ public class CommentSyncService {
 					"http://139.5.190.73:8047/api/ticketcontroller/deleteComments",
 					"http://139.5.190.73:8053/api/ticketcontroller/deleteComments",
 					"http://139.5.190.73:8051/api/ticketcontroller/deleteComments",
-					"http://elevateblr.ddns.net:8033/api/ticketcontroller/deleteComments");
+					"http://elevateblr.ddns.net:8033/api/ticketcontroller/deleteComments",
+					"http://139.5.190.244:8085/api/ticketcontroller/deleteComments",
+					"http://139.5.190.73:8055/api/ticketcontroller/deleteComments");
 
 			for (String baseUrl : urls) {
 

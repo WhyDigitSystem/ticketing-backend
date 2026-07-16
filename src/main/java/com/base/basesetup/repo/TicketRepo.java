@@ -44,7 +44,7 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 	@Query(nativeQuery = true, value = "select sum(high) high,sum(normal)normal,sum(mediums)mediums,sum(totalcount)totalcount,sum(highper)highper,sum(normalper)normalper,sum(mediumper) mediumper from (\r\n"
 			+ "   select count(*) as high,0 normal,0 mediums,0 totalcount,0 highper,0 normalper,0 mediumper from ticket where  upper(priority)='High' and (assignedto=?1 or 'ALL'=?1)\r\n"
 			+ "   union \r\n"
-			+ "   select 0 high,count(*) normal,0 mediums,0 totalcount ,0 highper,0 normalper,0 mediumper from ticket where  upper(priority)='Normal' and (assignedto=?1 or 'ALL'=?1)\r\n"
+			+ "   select 0 high,count(*) normal,0 mediums,0 totalcount ,0 highper,0 normalper,0 mediumper from ticket where  upper(priority)='Low' and (assignedto=?1 or 'ALL'=?1)\r\n"
 			+ "   union \r\n"
 			+ "   select 0 high,0 normal,count(*) mediums,0 totalcount ,0 highper,0 normalper,0 mediumper from ticket where  upper(priority)='Medium' and (assignedto=?1 or 'ALL'=?1)\r\n"
 			+ "   union\r\n"
@@ -55,7 +55,7 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 			+ "   highper,0 normalper,0 mediumper from ticket where (assignedto=?1 or 'ALL'=?1)\r\n"
 			+ "   union \r\n"
 			+ "   select 0 high,0 normal,0 mediums,0 totalcount , 0 highper,\r\n"
-			+ "   round(sum(case when upper(priority) = 'Normal' then  1 else  0 end) * 100.0 / count(*),2) as \r\n"
+			+ "   round(sum(case when upper(priority) = 'Low' then  1 else  0 end) * 100.0 / count(*),2) as \r\n"
 			+ "   normalper,0 mediumper from ticket where (assignedto=?1 or 'ALL'=?1)\r\n"
 			+ "   union \r\n"
 			+ "   select 0 high,0 normal,0 mediums,0 totalcount , 0 highper,0 normalper,\r\n"
@@ -88,5 +88,8 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 			+ "GROUP BY assignedto\r\n"
 			+ "ORDER BY totalcount DESC")
 	Set<Object[]> getRecentTopAssign(String application);
+
+	@Query(nativeQuery = true, value = "select * from ticket where ticketid=?1")
+	TicketVO getTicketStatusId(Long ticketId);
 
 }

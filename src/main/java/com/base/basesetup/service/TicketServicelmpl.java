@@ -226,7 +226,7 @@ public class TicketServicelmpl implements TicketService {
 		ticket.setAssignedDate(LocalDate.now());
 		ticket.setModifiedBy(dto.getModifiedBy());
 		ticket.setEmail(dto.getEmail());
-
+		ticket.setAssignPriority(dto.getAssignPriority());
 		TicketVO savedTicket = ticketRepo.save(ticket);
 
 		String message;
@@ -940,17 +940,17 @@ public class TicketServicelmpl implements TicketService {
 		}
 		return tickets;
 	}
-	
+
 	@Override
 	public List<TicketVO> getRecentTicket(String application) {
 
 		return ticketRepo.getRecentTicket(application);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getRecentTopAssign(String application) {
 
-		Set<Object[]> getApplicationDetails = ticketRepo.getRecentTopAssign( application);
+		Set<Object[]> getApplicationDetails = ticketRepo.getRecentTopAssign(application);
 		return getRecentTopAssign(getApplicationDetails);
 	}
 
@@ -963,6 +963,20 @@ public class TicketServicelmpl implements TicketService {
 			tickets.add(t);
 		}
 		return tickets;
+	}
+
+	@Override
+	public TicketVO assignedPriority(Long ticketId, String priority) {
+
+		TicketVO ticket = ticketRepo.getTicketStatusId(ticketId);
+
+		if (ticket == null) {
+			throw new RuntimeException("Ticket not found with ID: " + ticketId);
+		}
+
+		ticket.setPriority(priority);
+
+		return ticketRepo.save(ticket);
 	}
 
 }

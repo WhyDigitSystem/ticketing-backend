@@ -88,6 +88,6 @@ public interface TicketService {
 
 	List<Map<String, Object>> getRecentTopAssign(String application);
 
-//	TicketVO saveTicketIssueImage(MultipartFile file, Long id);
+	TicketVO assignedPriority(Long ticketId, String priority);
 
 }
