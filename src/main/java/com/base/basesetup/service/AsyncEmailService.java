@@ -43,7 +43,9 @@ public class AsyncEmailService {
 				"http://elevateblr.ddns.net:8033/api/ticketcontroller/updateTicketFromRemote",
 				"http://139.5.190.73:8033/api/ticketcontroller/updateTicketFromRemote",
 				"http://139.5.190.73:8055/api/ticketcontroller/updateTicketFromRemote",
-				"http://139.5.190.244:8085/api/ticketcontroller/updateTicketFromRemote");
+				"http://139.5.190.244:8085/api/ticketcontroller/updateTicketFromRemote",
+				"http://164.52.193.157:1521/api/ticketcontroller/updateTicketFromRemote",
+				"http://139.5.190.203:6061/api/ticketcontroller/updateTicketFromRemote");
 
 //		List<String> urls = Arrays.asList(
 //				"http://localhost:8047/api/ticketcontroller/updateTicketFromRemote");

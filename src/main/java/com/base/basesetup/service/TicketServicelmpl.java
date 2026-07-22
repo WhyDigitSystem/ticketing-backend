@@ -446,7 +446,10 @@ public class TicketServicelmpl implements TicketService {
 
 		// ✅ Update
 		ticket.setStatus(dto.getStatus());
-		ticket.setTicketStatus(dto.getTicketStatus());
+		ticket.setTicketStatus(
+			    "Your Ticket Resolved Please Check!\n"
+			    + "Thank You"
+			);
 		ticket.setModifiedBy(dto.getEmpCode());
 		ticket.setCompletedBy(dto.getEmpCode());
 		ticket.setCompletedOn(new Date());
