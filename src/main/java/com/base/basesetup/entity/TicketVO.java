@@ -133,6 +133,9 @@ public class TicketVO {
 	
 	@Column(name = "assignpriority")
 	private String assignPriority;
+	
+	@Column(name = "sourcedocid")
+	private String sourceDocId;
 
 	@Lob
 	@Column(name = "imagedata", columnDefinition = "LONGBLOB")

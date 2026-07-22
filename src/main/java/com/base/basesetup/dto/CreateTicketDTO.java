@@ -42,5 +42,7 @@ public class CreateTicketDTO {
 	private String sourceEmail;
 	
 	private String ticketStatus;
+	
+	private String sourceDocId;
 
 }
