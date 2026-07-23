@@ -460,7 +460,7 @@ public class TicketServicelmpl implements TicketService {
 		try {
 			String subject = savedTicket.getDescription() + " - Ticket Status Updated";
 
-			String html = loadHtmlTemplateUpdateMail(savedTicket.getId(), subject, savedTicket.getStatus(),
+			String html = loadHtmlTemplateUpdateMail(savedTicket.getSourceDocId(), subject, savedTicket.getStatus(),
 					savedTicket.getTicketStatus());
 
 			// ✅ ASYNC CALLS (NO WAIT)
@@ -546,7 +546,7 @@ public class TicketServicelmpl implements TicketService {
 		return tickets;
 	}
 
-	public String loadHtmlTemplateUpdateMail(Long ticketId, String subject, String status, String description) {
+	public String loadHtmlTemplateUpdateMail(String ticketId, String subject, String status, String description) {
 
 		try {
 			ClassPathResource resource = new ClassPathResource("template/Updates_mail.html");
